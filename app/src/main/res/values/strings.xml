@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Alertify</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="switch_datetime_picker_name">Switch DateTime Picker</string>
+    <string name="open_datetime_dialog">Open DateTime Dialog</string>
+    <string name="open_datetime_dialog_with_neutral_button">Open DateTime Dialog with Neutral Button</string>
+    <string name="clean">Clean</string>
+    <string name="label_datetime_dialog">DateTime</string>
+</resources>

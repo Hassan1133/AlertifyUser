@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".records.criminals.CriminalsActivity">
+
+    <SearchView
+        android:id="@+id/criminals_search_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:iconifiedByDefault="false"
+        android:queryBackground="@null"
+        android:queryHint="Search..."
+        android:theme="@style/search_view_style" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/criminals_recycler"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/criminals_search_view" />
+
+    <ProgressBar
+        android:id="@+id/criminals_progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:indeterminateTint="@color/app_color"
+        android:visibility="invisible" />
+
+</RelativeLayout>

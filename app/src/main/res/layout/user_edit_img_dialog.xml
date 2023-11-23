@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/edit_dialog_shape"
+        >
+
+        <ImageView
+            android:id="@+id/dep_admin_img_close_btn"
+            android:layout_width="20sp"
+            android:layout_height="20sp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/close"
+            />
+
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/user_dialog_image"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:scaleType="centerCrop"
+            app:shapeAppearance="@style/dep_admin_update_img_corners"
+            />
+
+        <ProgressBar
+            android:id="@+id/user_img_progressbar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@+id/user_dialog_image"
+            android:layout_centerHorizontal="true"
+            android:indeterminateTint="@color/app_color"
+            android:layout_marginTop="5dp"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/user_img_update_btn"
+            android:layout_width="match_parent"
+            android:layout_height="50sp"
+            android:layout_below="@id/user_img_progressbar"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            android:backgroundTint="@color/app_color"
+            android:text="update"
+            android:textColor="@color/white"
+             />
+
+    </RelativeLayout>
+
+</ScrollView>

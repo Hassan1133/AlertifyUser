@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/complaints"
+        android:title="Complaints"
+        android:icon="@drawable/complaint"
+        />
+
+    <item
+        android:id="@+id/police_station"
+        android:title="Police Station"
+        android:icon="@drawable/police"
+        />
+
+    <item
+        android:id="@+id/records"
+        android:title="Records"
+        android:icon="@drawable/record"
+        />
+
+</menu>
