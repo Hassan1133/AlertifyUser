@@ -19,58 +19,58 @@
         android:theme="@style/Theme.Alertify_user"
         tools:targetApi="31">
         <activity
-            android:name=".complaints.SeeEvidenceActivity"
+            android:name=".activities.SeeEvidenceActivity"
             android:exported="false"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".complaints.ComplaintsDetailsActivity"
+            android:name=".activities.ComplaintsDetailsActivity"
             android:configChanges="orientation"
             android:exported="false"
             android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAeUk3zL2dPXtHNfqSAI7jJzPs-cqypRQk" />
+            android:value="@string/maps_api_key" />
 
         <activity
-            android:name=".main_utils.MapsActivity"
+            android:name=".activities.MapsActivity"
             android:configChanges="orientation"
             android:exported="false"
             android:label="@string/title_activity_maps"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".main_utils.EditUserProfileActivity"
+            android:name=".activities.EditUserProfileActivity"
             android:configChanges="orientation"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.example.alertify_user.records.criminals.CriminalsActivity"
+            android:name="com.example.alertify_user.activities.CriminalsActivity"
             android:configChanges="orientation"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.example.alertify_user.records.laws.LawsActivity"
+            android:name="com.example.alertify_user.activities.LawsActivity"
             android:configChanges="orientation"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.example.alertify_user.records.crimes.CrimesActivity"
+            android:name="com.example.alertify_user.activities.CrimesActivity"
             android:configChanges="orientation"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.example.alertify_user.authentication.LoginSignup"
+            android:name="com.example.alertify_user.activities.LoginSignupActivity"
             android:configChanges="orientation"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".main_utils.MainActivity"
+            android:name=".activities.MainActivity"
             android:configChanges="orientation"
             android:exported="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.example.alertify_user.splash_screen.SplashScreen"
+            android:name="com.example.alertify_user.activities.SplashScreen"
             android:configChanges="orientation"
             android:exported="true"
             android:screenOrientation="portrait">

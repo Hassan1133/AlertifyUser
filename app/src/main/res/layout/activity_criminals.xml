@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".records.criminals.CriminalsActivity">
+    tools:context=".activities.CriminalsActivity">
 
     <SearchView
         android:id="@+id/criminals_search_view"

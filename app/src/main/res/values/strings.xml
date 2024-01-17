@@ -6,4 +6,27 @@
     <string name="open_datetime_dialog_with_neutral_button">Open DateTime Dialog with Neutral Button</string>
     <string name="clean">Clean</string>
     <string name="label_datetime_dialog">DateTime</string>
+    <string name="alertify_heading">ALERTIFY</string>
+    <string name="select_item">Select Police Station</string>
+    <string name="cancel">Cancel</string>
+    <string name="login">Login</string>
+    <string name="sigup">Sogin</string>
+    <string name="password_hint">enter atleast 6 words</string>
+    <string name="user_name_hint">enter user name</string>
+    <string name="ok">Ok</string>
+    <string name="maps_api_key">AIzaSyCoDtci5S11xJfMTs4zIJvBoytoIKnfn_Y</string>
+    <string name="search">Search...</string>
+    <string name="current_password">Current Password</string>
+    <string name="new_password">New Password</string>
+    <string name="update">Update</string>
+    <string name="email_hint">example@gmail.com</string>
+    <string name="name_hint">enter your name</string>
+    <string name="mobile_hint">enter your mobile no</string>
+    <string name="cnic_hint">enter your cnic no</string>
+    <string name="crime_location_hint">Crime Location</string>
+    <string name="crime_evidence_hint">Crime Evidence (Optional)</string>
+    <string name="report_crime">Report Crime</string>
+    <string name="crime_type_hint">Crime Type</string>
+    <string name="crime_details_hint">Crime Details</string>
+    <string name="crime_date_hint">Crime DateTime</string>
 </resources>

@@ -22,7 +22,7 @@
             android:layout_marginEnd="20dp">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/image"
+                android:id="@+id/userImg"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:src="@drawable/dp"
@@ -30,10 +30,10 @@
                 />
 
             <ImageView
-                android:id="@+id/pick_img_icon"
+                android:id="@+id/pickImgIcon"
                 android:layout_width="23sp"
                 android:layout_height="23sp"
-                android:layout_alignRight="@+id/image"
+                android:layout_alignRight="@+id/userImg"
                 android:layout_alignParentBottom="true"
                 android:src="@drawable/camera" />
 
@@ -60,7 +60,7 @@
             android:layout_below="@+id/txt_alertify_main_admin"
             android:layout_marginStart="20dp"
             android:text="Please enter your details."
-            android:textColor="#676767"
+            android:textColor="@color/hint_color"
             android:textSize="12sp" />
 
 
@@ -86,7 +86,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
-            android:hint="enter your name"
+            android:hint="@string/name_hint"
             android:textColorHint="@color/hint_color"
             app:boxBackgroundColor="#DCDCDC"
             app:boxCornerRadiusBottomEnd="25dp"
@@ -132,7 +132,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
-            android:hint="enter your mobile no"
+            android:hint="@string/mobile_hint"
             android:textColorHint="@color/hint_color"
             app:boxBackgroundColor="#DCDCDC"
             app:boxCornerRadiusBottomEnd="25dp"
@@ -178,7 +178,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
-            android:hint="enter your cnic no"
+            android:hint="@string/cnic_hint"
             android:textColorHint="@color/hint_color"
             app:boxBackgroundColor="#DCDCDC"
             app:boxCornerRadiusBottomEnd="25dp"
@@ -225,7 +225,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
-            android:hint="example@gmail.com"
+            android:hint="@string/email_hint"
             android:textColorHint="@color/hint_color"
             app:boxBackgroundColor="#DCDCDC"
             app:boxCornerRadiusBottomEnd="25dp"
@@ -272,7 +272,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
-            android:hint="enter atleast 6 words"
+            android:hint="@string/password_hint"
             android:textColorHint="@color/hint_color"
             app:boxBackgroundColor="#DCDCDC"
             app:boxCornerRadiusBottomEnd="25dp"
@@ -303,15 +303,16 @@
         <!--        start of signup button-->
 
         <Button
-            android:id="@+id/signup_btn"
+            android:id="@+id/signupBtn"
             android:layout_width="match_parent"
             android:layout_height="50sp"
             android:layout_below="@id/password_layout"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
+            android:textAllCaps="false"
             android:layout_marginEnd="20dp"
-            android:backgroundTint="#3490DC"
-            android:text="Signup"
+            android:backgroundTint="@color/app_color"
+            android:text="@string/sigup"
             android:textColor="@color/white"
             app:cornerRadius="25dp" />
 

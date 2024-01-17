@@ -10,46 +10,11 @@
         android:background="@drawable/dialog_shape">
 
         <ImageView
-            android:id="@+id/close_btn"
+            android:id="@+id/closeBtn"
             android:layout_width="20sp"
             android:layout_height="20sp"
             android:layout_alignParentEnd="true"
             android:src="@drawable/close" />
-
-        <RelativeLayout
-            android:id="@+id/evidence_layout"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/close_btn"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp">
-
-            <ImageView
-                android:id="@+id/evidence_image"
-                android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/pick_evidence" />
-
-            <VideoView
-                android:id="@+id/evidence_video"
-                android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:visibility="invisible" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/evidence_image"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
-                android:text="Select evidence"
-                android:textColor="@color/hint_color" />
-
-        </RelativeLayout>
 
 
         <com.google.android.material.textfield.TextInputLayout
@@ -57,11 +22,11 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/evidence_layout"
+            android:layout_below="@+id/closeBtn"
             android:layout_marginStart="20dp"
             android:layout_marginTop="40dp"
             android:layout_marginEnd="20dp"
-            android:hint="Crime type"
+            android:hint="@string/crime_type_hint"
             android:textColorHint="@color/hint_color"
             app:boxBackgroundColor="@color/white"
             app:boxStrokeColor="@color/hint_color"
@@ -69,7 +34,7 @@
             app:hintTextColor="@color/hint_color">
 
             <AutoCompleteTextView
-                android:id="@+id/crime_type"
+                android:id="@+id/crimeType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none"
@@ -87,13 +52,13 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
-            android:hint="Crime details"
+            android:hint="@string/crime_details_hint"
             android:textColorHint="@color/hint_color"
             app:boxStrokeColor="@color/hint_color"
             app:hintTextColor="@color/hint_color">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/crime_details"
+                android:id="@+id/crimeDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/hint_color"
@@ -102,7 +67,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/crime_date_time_layout"
+            android:id="@+id/crimeDateTimeLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -110,7 +75,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
-            android:hint="Crime DateTime"
+            android:hint="@string/crime_date_hint"
             android:textColorHint="@color/hint_color"
             app:boxStrokeColor="@color/hint_color"
             app:endIconDrawable="@drawable/date_icon"
@@ -118,7 +83,7 @@
             app:hintTextColor="@color/hint_color">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/crime_date"
+                android:id="@+id/crimeDateTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:enabled="false"
@@ -129,15 +94,15 @@
 
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/crime_location_layout"
+            android:id="@+id/crimeLocationLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/crime_date_time_layout"
+            android:layout_below="@+id/crimeDateTimeLayout"
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
-            android:hint="Crime Location"
+            android:hint="@string/crime_location_hint"
             android:textColorHint="@color/hint_color"
             app:boxStrokeColor="@color/hint_color"
             app:endIconDrawable="@drawable/location"
@@ -145,7 +110,7 @@
             app:hintTextColor="@color/hint_color">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/crime_location"
+                android:id="@+id/crimeLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:enabled="false"
@@ -153,25 +118,42 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <ProgressBar
-            android:id="@+id/complaint_dialog_progressbar"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_below="@+id/crime_location_layout"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="3dp"
-            android:indeterminateTint="@color/app_color"
-            android:visibility="invisible" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/crimeEvidenceLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/crimeLocationLayout"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:hint="@string/crime_evidence_hint"
+            android:textColorHint="@color/hint_color"
+            app:boxStrokeColor="@color/hint_color"
+            app:endIconDrawable="@drawable/attach_file"
+            app:endIconMode="custom"
+            app:hintTextColor="@color/hint_color">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/crimeEvidence"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:textColor="@color/hint_color" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/report_crime_btn"
+            android:id="@+id/reportCrimeBtn"
             android:layout_width="match_parent"
             android:layout_height="50sp"
-            android:layout_below="@id/complaint_dialog_progressbar"
+            android:layout_below="@id/crimeEvidenceLayout"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"
             android:backgroundTint="@color/app_color"
-            android:text="Report Crime"
+            android:text="@string/report_crime"
             android:textAllCaps="false"
             android:textColor="@color/white"
             app:cornerRadius="10dp" />

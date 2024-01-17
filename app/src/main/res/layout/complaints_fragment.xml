@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white">
 
-    <SearchView
+    <androidx.appcompat.widget.SearchView
         android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:iconifiedByDefault="false"
-        android:queryBackground="@null"
-        android:queryHint="Search..."
-        android:theme="@style/search_view_style" />
+        app:iconifiedByDefault="false"
+        app:queryHint="@string/search"
+        android:theme="@style/search_view_style"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/complaints_recycler"
+        android:id="@+id/complaintsRecycler"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/search_view" />
@@ -32,7 +31,7 @@
         android:visibility="invisible" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addBtn"
+        android:id="@+id/addComplaintBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"

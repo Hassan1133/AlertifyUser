@@ -8,4 +8,6 @@ public interface Constants {
 
     int PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 104;
 
+    long EVIDENCE_FILE_SIZE_LIMIT = 10 * 1024 * 1024; // 10MB
+
 }

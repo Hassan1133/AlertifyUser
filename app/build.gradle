@@ -71,4 +71,10 @@ dependencies {
     implementation "androidx.media3:media3-exoplayer:1.1.1"
     implementation "androidx.media3:media3-exoplayer-dash:1.1.1"
     implementation "androidx.media3:media3-ui:1.1.1"
+
+    //    clk progress library
+    implementation 'com.github.colakcode:clkProgress:v1.0'
+
+    // map utils
+    implementation 'com.google.maps.android:android-maps-utils:2.2.0'
 }

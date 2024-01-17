@@ -10,7 +10,7 @@
         <item name="colorSecondaryVariant">@color/app_color</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">#3490dc</item>
+        <item name="android:statusBarColor">@color/app_color</item>
         <!-- Customize your theme here. -->
         <item name="android:windowDisablePreview">true</item>
     </style>
