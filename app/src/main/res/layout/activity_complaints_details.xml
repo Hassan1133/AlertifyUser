@@ -12,7 +12,7 @@
         android:background="@color/white">
 
         <TextView
-            android:id="@+id/feedback"
+            android:id="@+id/feedBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -33,39 +33,27 @@
             android:textColor="@color/black"
             android:textSize="17sp" />
 
-        <RelativeLayout
-            android:id="@+id/crime_evidence_layout"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_below="@+id/crime_evidence_heading"
+
+        <Button
+            android:id="@+id/downloadEvidenceBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp">
-
-            <ImageView
-                android:id="@+id/crime_evidence_image"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:src="@drawable/evidence_icon" />
-
-            <ImageView
-                android:id="@+id/crime_evidence_video"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_centerInParent="true"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/play_video"
-                android:visibility="gone" />
-        </RelativeLayout>
+            android:backgroundTint="@color/app_color"
+            android:layout_marginTop="20dp"
+            app:icon="@drawable/download"
+            android:textAllCaps="false"
+            android:layout_below="@+id/crime_evidence_heading"
+            android:text="@string/download"
+            style="@style/Widget.MaterialComponents.Button.Icon"
+            />
 
 
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/crime_evidence_underline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/crime_evidence_layout"
+            android:layout_below="@+id/downloadEvidenceBtn"
             android:layout_marginTop="20dp" />
 
         <TextView
@@ -80,7 +68,7 @@
             android:textSize="17sp" />
 
         <TextView
-            android:id="@+id/details_crime_type"
+            android:id="@+id/detailsCrimeType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/crime_type_heading"
@@ -94,7 +82,7 @@
             android:id="@+id/crime_type_underline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/details_crime_type"
+            android:layout_below="@+id/detailsCrimeType"
             android:layout_marginTop="20dp" />
 
         <TextView
@@ -109,7 +97,7 @@
             android:textSize="17sp" />
 
         <TextView
-            android:id="@+id/details_crime"
+            android:id="@+id/detailsCrime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/crime_details_heading"
@@ -123,7 +111,7 @@
             android:id="@+id/crime_details_underline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/details_crime"
+            android:layout_below="@+id/detailsCrime"
             android:layout_marginTop="20dp" />
 
         <TextView
@@ -138,7 +126,7 @@
             android:textSize="17sp" />
 
         <TextView
-            android:id="@+id/details_crime_location"
+            android:id="@+id/detailsCrimeLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/crime_Location_heading"
@@ -152,7 +140,7 @@
             android:id="@+id/crime_location_underline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/details_crime_location"
+            android:layout_below="@+id/detailsCrimeLocation"
             android:layout_marginTop="20dp" />
 
         <TextView
@@ -167,7 +155,7 @@
             android:textSize="17sp" />
 
         <TextView
-            android:id="@+id/details_crime_date_time"
+            android:id="@+id/detailsCrimeDateTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/crime_date_time_heading"
@@ -181,7 +169,7 @@
             android:id="@+id/crime_date_time_underline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/details_crime_date_time"
+            android:layout_below="@+id/detailsCrimeDateTime"
             android:layout_marginTop="20dp" />
 
         <TextView
@@ -196,7 +184,7 @@
             android:textSize="17sp" />
 
         <TextView
-            android:id="@+id/details_complaint_police_station"
+            android:id="@+id/detailsComplaintPoliceStation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/complaint_police_station_heading"
@@ -210,7 +198,7 @@
             android:id="@+id/complaint_police_station_underline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/details_complaint_police_station"
+            android:layout_below="@+id/detailsComplaintPoliceStation"
             android:layout_marginTop="20dp" />
 
 
@@ -226,7 +214,7 @@
             android:textSize="17sp" />
 
         <TextView
-            android:id="@+id/details_complaint_date_time"
+            android:id="@+id/detailsComplaintDateTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/complaint_date_time_heading"

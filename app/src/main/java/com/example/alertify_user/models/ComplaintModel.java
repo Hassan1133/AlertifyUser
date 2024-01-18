@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 public class ComplaintModel implements Serializable {
     private String crimeType;
-    private String evidenceFileType;
     private String complaintId;
     private String crimeDetails;
     private String evidenceUrl;
@@ -122,11 +121,4 @@ public class ComplaintModel implements Serializable {
         this.policeStation = policeStation;
     }
 
-    public String getEvidenceFileType() {
-        return evidenceFileType;
-    }
-
-    public void setEvidenceFileType(String evidenceFileType) {
-        this.evidenceFileType = evidenceFileType;
-    }
 }

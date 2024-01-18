@@ -126,7 +126,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
 
         binding.complaintsRecycler.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
-//        fetchComplaintsData();
+        fetchComplaintsData();
     }
 
     // Method for date and time picker dialog
@@ -362,7 +362,6 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
                         @Override
                         public void onComplete(@NonNull Task<Uri> task) {
                             complaintModel.setEvidenceUrl(task.getResult().toString());
-                            complaintModel.setEvidenceFileType(taskSnapshot.getMetadata().getContentType());
                             addToDb(complaintModel);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
