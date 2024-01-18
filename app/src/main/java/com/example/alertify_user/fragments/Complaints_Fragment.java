@@ -78,7 +78,6 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
 
     private ComplaintsFragmentBinding binding;
     private ComplaintDialogBinding complaintDialogBinding;
-    private static final int EARTH_RADIUS_KM = 6371; // Earth's radius in kilometers
     private Dialog complaintDialog;
     private String appropriatePoliceStationName;
     private DropDownAdapter dropDownAdapter;
@@ -298,8 +297,8 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
                     break;
                 }
             }
-            if(appropriatePoliceStationName == null)
-            {
+
+            if (appropriatePoliceStationName == null) {
                 LoadingDialog.hideLoadingDialog();
                 Toast.makeText(getActivity(), "No police station found regarding your location", Toast.LENGTH_SHORT).show();
             }
@@ -363,6 +362,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
                         @Override
                         public void onComplete(@NonNull Task<Uri> task) {
                             complaintModel.setEvidenceUrl(task.getResult().toString());
+                            complaintModel.setEvidenceFileType(taskSnapshot.getMetadata().getContentType());
                             addToDb(complaintModel);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
