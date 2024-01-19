@@ -28,7 +28,7 @@ public class ComplaintsDetailsActivity extends AppCompatActivity implements View
 
     private ActivityComplaintsDetailsBinding binding;
     private ComplaintModel complaintModel;
-    private String evidenceUrl;
+    private String evidenceUrl, evidenceType;
     private Dialog feedBackDialog;
 
     private TextInputEditText feedback;
@@ -51,6 +51,7 @@ public class ComplaintsDetailsActivity extends AppCompatActivity implements View
     void getDataFromIntent() {
         complaintModel = (ComplaintModel) getIntent().getSerializableExtra("complaintModel");
         evidenceUrl = complaintModel.getEvidenceUrl();
+        evidenceType = complaintModel.getEvidenceType();
         binding.detailsCrimeType.setText(complaintModel.getCrimeType());
         binding.detailsCrime.setText(complaintModel.getCrimeDetails());
         binding.detailsCrimeLocation.setText(complaintModel.getCrimeLocation());
@@ -73,9 +74,10 @@ public class ComplaintsDetailsActivity extends AppCompatActivity implements View
 
     private void downloadEvidence() {
 
-        if(evidenceUrl != null && !evidenceUrl.isEmpty())
+        if(evidenceUrl != null && !evidenceUrl.isEmpty() && evidenceType != null && !evidenceType.isEmpty())
         {
-            String fileName = "evidence_file";
+
+            String fileName = "evidence_file."+getFileType();
 
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(evidenceUrl))
                     .setTitle("File Download") // Title of the notification during download
@@ -105,5 +107,39 @@ public class ComplaintsDetailsActivity extends AppCompatActivity implements View
 
         feedback = feedBackDialog.findViewById(R.id.report_feedback);
         binding.feedBack.setText(complaintModel.getFeedback());
+    }
+
+    private String getFileType()
+    {
+        String fileType = "";
+        if(evidenceType.matches("application/msword"))
+        {
+            fileType = "docx";
+        }
+        if(evidenceType.matches("application/pdf"))
+        {
+            fileType = "pdf";
+        }
+        if(evidenceType.matches("application/vnd.openxmlformats-officedocument.presentationml.presentation"))
+        {
+            fileType = "pptx";
+        }
+        if(evidenceType.startsWith("video"))
+        {
+            fileType = "mp4";
+        }
+        if(evidenceType.startsWith("audio"))
+        {
+            fileType = "mp3";
+        }
+        if(evidenceType.startsWith("image"))
+        {
+            fileType = "jpg";
+        }
+        if(evidenceType.matches("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+        {
+            fileType = "xlsx";
+        }
+        return fileType;
     }
 }

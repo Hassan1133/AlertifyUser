@@ -362,6 +362,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
                         @Override
                         public void onComplete(@NonNull Task<Uri> task) {
                             complaintModel.setEvidenceUrl(task.getResult().toString());
+                            complaintModel.setEvidenceType(taskSnapshot.getMetadata().getContentType());
                             addToDb(complaintModel);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -381,6 +382,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
             });
         } else {
             complaintModel.setEvidenceUrl("");
+            complaintModel.setEvidenceType("");
             addToDb(complaintModel);
         }
     }
