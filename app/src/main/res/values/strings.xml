@@ -30,4 +30,5 @@
     <string name="crime_details_hint">Crime Details</string>
     <string name="crime_date_hint">Crime DateTime</string>
     <string name="download">Download</string>
+    <string name="direction">Directions</string>
 </resources>

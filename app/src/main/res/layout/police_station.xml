@@ -2,12 +2,28 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white">
 
-   <TextView
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:text="police station"
-       />
+   <androidx.fragment.app.FragmentContainerView
+       android:id="@+id/policeStationMap"
+       android:name="com.google.android.gms.maps.SupportMapFragment"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent" />
+
+   <Button
+       android:id="@+id/startDirectionBtn"
+       android:layout_width="match_parent"
+       android:layout_height="50sp"
+       android:layout_marginStart="20dp"
+       android:layout_marginEnd="20dp"
+       android:layout_alignParentBottom="true"
+       android:layout_marginBottom="20dp"
+       android:backgroundTint="@color/app_color"
+       android:textAllCaps="false"
+       style="@style/Widget.MaterialComponents.Button.Icon"
+       android:text="@string/direction"
+       app:icon="@drawable/direction"
+       android:textColor="@color/white" />
 
 </RelativeLayout>
