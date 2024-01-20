@@ -3,31 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".activities.CrimesActivity">
 
-    <SearchView
-        android:id="@+id/crimes_search_view"
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/crimeSearchView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:iconifiedByDefault="false"
-        android:queryBackground="@null"
-        android:queryHint="Search..."
-        android:theme="@style/search_view_style" />
+        android:layout_height="35dp"
+        android:layout_margin="15dp"
+        android:background="@drawable/fragment_search_view_bg"
+        android:elevation="3dp"
+        android:theme="@style/search_view_style"
+        app:iconifiedByDefault="false"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:queryBackground="@color/transparent"
+        app:queryHint="@string/search" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/crimes_recycler"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/crimes_search_view" />
-
-    <ProgressBar
-        android:id="@+id/crimes_progressbar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:indeterminateTint="@color/app_color"
-        android:visibility="invisible" />
+        android:layout_below="@+id/crimeSearchView" />
 
 </RelativeLayout>

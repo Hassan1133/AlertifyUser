@@ -4,15 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.MapsActivity"
-    >
+    tools:context=".activities.MapsActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent" />
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"
@@ -22,12 +20,12 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
+        app:queryBackground="@color/transparent"
         android:background="@drawable/search_view"
-        android:elevation="5dp"
+        android:elevation="3dp"
         android:theme="@style/search_view_style"
         app:iconifiedByDefault="false"
-        app:queryHint="@string/search"
-        />
+        app:queryHint="@string/search" />
 
 </RelativeLayout>
 

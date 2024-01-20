@@ -3,31 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".activities.LawsActivity">
 
-    <SearchView
-        android:id="@+id/laws_search_view"
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/lawSearchView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:iconifiedByDefault="false"
-        android:queryBackground="@null"
-        android:queryHint="Search..."
-        android:theme="@style/search_view_style" />
+        android:layout_height="35dp"
+        android:layout_margin="15dp"
+        android:background="@drawable/fragment_search_view_bg"
+        android:elevation="3dp"
+        android:theme="@style/search_view_style"
+        app:iconifiedByDefault="false"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:queryBackground="@color/transparent"
+        app:queryHint="@string/search" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/criminals_recycler"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/laws_search_view" />
-
-    <ProgressBar
-        android:id="@+id/laws_progressbar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:indeterminateTint="@color/app_color"
-        android:visibility="invisible" />
+        android:layout_below="@+id/lawSearchView" />
 
 </RelativeLayout>

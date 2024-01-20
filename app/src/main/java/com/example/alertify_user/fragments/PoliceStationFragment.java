@@ -1,6 +1,7 @@
 package com.example.alertify_user.fragments;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -9,18 +10,25 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.alertify_user.R;
+import com.example.alertify_user.activities.MapsActivity;
 import com.example.alertify_user.databinding.PoliceStationBinding;
 import com.example.alertify_user.main_utils.LatLngWrapper;
 import com.example.alertify_user.main_utils.LoadingDialog;
+import com.example.alertify_user.main_utils.LocationPermissionUtils;
 import com.example.alertify_user.models.PoliceStationModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -29,6 +37,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -46,9 +55,8 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
     private FusedLocationProviderClient fusedLocationProviderClient;
     private SupportMapFragment mapFragment;
     private PoliceStationBinding binding;
-    private double currentLatitude;
-    private double currentLongitude;
-
+    private double userLatitude;
+    private double userLongitude;
     private double appropriatePoliceStationLatitude;
     private double appropriatePoliceStationLongitude;
     private GoogleMap googleMap;
@@ -58,6 +66,8 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
     private String appropriatePoliceStationLocation;
 
     private ArrayAdapter arrayAdapter;
+
+    private LocationPermissionUtils permissionUtils;
 
     @Nullable
     @Override
@@ -77,14 +87,58 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
-        getLastLocation(); // get Last Location
-
         policeStationsRef = FirebaseDatabase.getInstance().getReference("AlertifyPoliceStations");
         policeStations = new ArrayList<>();
 
         arrayAdapter = new ArrayAdapter(getActivity(), R.layout.drop_down_item, getResources().getStringArray(R.array.location_options));
         // set adapter to the autocomplete tv to the arrayAdapter
         binding.userLocation.setAdapter(arrayAdapter);
+
+        permissionUtils = new LocationPermissionUtils(getActivity());
+
+        dropDownSelection();
+    }
+
+    private void dropDownSelection() {
+        binding.userLocation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                get the selected item
+                String selectedItem = (String) adapterView.getItemAtPosition(i);
+
+                if (selectedItem.matches("Your Current Location")) {
+                    appropriatePoliceStationLocation = null;
+                    appropriatePoliceStationLatitude = 0;
+                    appropriatePoliceStationLongitude = 0;
+                    userLatitude = 0;
+                    userLongitude = 0;
+                    googleMap.clear();
+                    if (permissionUtils.isMapsEnabled()) {
+                        if (permissionUtils.isLocationPermissionGranted()) {
+                            getLastLocation(); // get Last Location
+                        } else {
+                            permissionUtils.getLocationPermission();
+                        }
+                    }
+
+                } else if (selectedItem.matches("Choose on Map")) {
+                    appropriatePoliceStationLocation = null;
+                    appropriatePoliceStationLatitude = 0;
+                    appropriatePoliceStationLongitude = 0;
+                    userLatitude = 0;
+                    userLongitude = 0;
+                    googleMap.clear();
+                    if (permissionUtils.isMapsEnabled()) {
+                        if (permissionUtils.isLocationPermissionGranted()) {
+                            Intent intent = new Intent(getActivity(), MapsActivity.class);
+                            mapsActivityResultLauncher.launch(intent);
+                        } else {
+                            permissionUtils.getLocationPermission();
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -101,8 +155,8 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
             @Override
             public void onSuccess(Location location) {
 
-                currentLatitude = location.getLatitude();
-                currentLongitude = location.getLongitude();
+                userLatitude = location.getLatitude();
+                userLongitude = location.getLongitude();
                 getPoliceStationsData();
             }
         });
@@ -133,14 +187,14 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
     }
 
     private void getAppropriatePoliceStation() {// Find the appropriate police station
-        if (policeStations != null && !policeStations.isEmpty() && !Double.isNaN(currentLatitude) && !Double.isNaN(currentLongitude)) { // Check if the list is not null and not empty
+        if (policeStations != null && !policeStations.isEmpty() && userLatitude != 0 && userLongitude != 0) { // Check if the list is not null and not empty
 
 
             for (PoliceStationModel policeStation : policeStations) {
 
                 List<LatLng> latLngPoints = convertLatLngWrapperList(policeStation.getBoundaries());
 
-                if (isLocationInsidePoliceStationArea(new LatLng(currentLatitude, currentLongitude), latLngPoints)) {
+                if (isLocationInsidePoliceStationArea(new LatLng(userLatitude, userLongitude), latLngPoints)) {
                     moveCameraToAppropriatePoliceStationLocation(policeStation.getPoliceStationName(), policeStation.getPoliceStationLatitude(), policeStation.getPoliceStationLongitude());
                     appropriatePoliceStationLocation = policeStation.getPoliceStationLocation();
                     appropriatePoliceStationLatitude = policeStation.getPoliceStationLatitude();
@@ -179,11 +233,10 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.startDirectionBtn:
-                if (!appropriatePoliceStationLocation.isEmpty() && appropriatePoliceStationLocation != null) {
-                    openGoogleMapsForDirections(currentLatitude, currentLongitude, appropriatePoliceStationLatitude, appropriatePoliceStationLongitude);
-                    Toast.makeText(getActivity(), appropriatePoliceStationLocation, Toast.LENGTH_SHORT).show();
+                if (userLatitude != 0 && userLongitude != 0 && appropriatePoliceStationLatitude != 0 && appropriatePoliceStationLongitude != 0) {
+                    openGoogleMapsForDirections(userLatitude, userLongitude, appropriatePoliceStationLatitude, appropriatePoliceStationLongitude);
                 } else {
-                    Toast.makeText(getActivity(), "please wait", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Please select your location", Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -191,8 +244,8 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
 
     private void openGoogleMapsForDirections(double startLat, double startLon, double destLat, double destLon) {
         //Uri with the destination coordinates
-        // https://www.google.com/maps/dir/?api=1&origin=37.7749,-122.4194&destination=34.0522,-118.2437
-        Uri gmmIntentUri = Uri.parse("https://www.google.com/maps/dir/?api=1&origin=" + startLat + "," + startLon + "&destination=" + destLat + "," + destLon);
+        // http://maps.google.com/maps?saddr=37.7749,-122.4194&daddr=34.0522,-118.2437
+        Uri gmmIntentUri = Uri.parse("http://maps.google.com/maps?saddr=" + startLat + "," + startLon + "&daddr=" + destLat + "," + destLon);
 
         //Intent with the action to view and set the data to the Uri
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
@@ -208,10 +261,21 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
         }
     }
 
-    private void moveCameraToAppropriatePoliceStationLocation(String policeStationName, double lat, double lng)
-    {
+    private void moveCameraToAppropriatePoliceStationLocation(String policeStationName, double lat, double lng) {
         LatLng latLng = new LatLng(lat, lng);
-        googleMap.addMarker(new MarkerOptions().position(latLng).title(policeStationName));
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+        Marker marker = googleMap.addMarker(new MarkerOptions().position(latLng).title(policeStationName));
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
+        marker.showInfoWindow();
     }
+
+    private final ActivityResultLauncher<Intent> mapsActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                userLatitude = result.getData().getDoubleExtra("latitude", 0);
+                userLongitude = result.getData().getDoubleExtra("longitude", 0);
+                getPoliceStationsData();
+            }
+        }
+    });
 }
