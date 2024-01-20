@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -56,6 +57,8 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
 
     private String appropriatePoliceStationLocation;
 
+    private ArrayAdapter arrayAdapter;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -78,6 +81,10 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
 
         policeStationsRef = FirebaseDatabase.getInstance().getReference("AlertifyPoliceStations");
         policeStations = new ArrayList<>();
+
+        arrayAdapter = new ArrayAdapter(getActivity(), R.layout.drop_down_item, getResources().getStringArray(R.array.location_options));
+        // set adapter to the autocomplete tv to the arrayAdapter
+        binding.userLocation.setAdapter(arrayAdapter);
     }
 
     @Override
@@ -183,21 +190,21 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
     }
 
     private void openGoogleMapsForDirections(double startLat, double startLon, double destLat, double destLon) {
-        // Create a Uri with the destination coordinates
+        //Uri with the destination coordinates
+        // https://www.google.com/maps/dir/?api=1&origin=37.7749,-122.4194&destination=34.0522,-118.2437
         Uri gmmIntentUri = Uri.parse("https://www.google.com/maps/dir/?api=1&origin=" + startLat + "," + startLon + "&destination=" + destLat + "," + destLon);
 
-        // Create an Intent with the action to view and set the data to the Uri
+        //Intent with the action to view and set the data to the Uri
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
 
-        // Set the package to ensure only the Google Maps app is used
+        //package to ensure only the Google Maps app is used
         mapIntent.setPackage("com.google.android.apps.maps");
 
         // Check if there is an app available to handle the Intent before starting it
         if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivity(mapIntent);
         } else {
-            // Handle the case where Google Maps is not installed on the device
-            // You may want to prompt the user to install Google Maps
+            Toast.makeText(getActivity(), "Google Maps not installed in this device", Toast.LENGTH_SHORT).show();
         }
     }
 
