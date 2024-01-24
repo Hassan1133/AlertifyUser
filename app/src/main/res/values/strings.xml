@@ -29,7 +29,7 @@
     <string name="crime_type_hint">Crime Type</string>
     <string name="your_location_hint">Select Your Location</string>
     <string name="crime_details_hint">Crime Details</string>
-    <string name="crime_date_hint">Crime DateTime</string>
+    <string name="crime_date_hint">Crime Date Time</string>
     <string name="download">Download</string>
     <string name="direction">Directions</string>
 </resources>

@@ -226,18 +226,40 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
 
         complaintDialogBinding.crimeDateTimeLayout.setEndIconOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 dateTimeFragment.startAtCalendarView();
                 dateTimeFragment.setDefaultDateTime(Calendar.getInstance().getTime());
                 dateTimeFragment.show(getActivity().getSupportFragmentManager(), TAG_DATETIME_FRAGMENT);
             }
-
         });
 
         complaintDialogBinding.crimeEvidenceLayout.setEndIconOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 pickEvidence();
+            }
+
+        });
+        complaintDialogBinding.crimeTypeLayout.setStartIconOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "hello", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+
+        complaintDialogBinding.crimeDetailsLayout.setStartIconOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "hello", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+
+        complaintDialogBinding.crimeDateTimeLayout.setStartIconOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "hello", Toast.LENGTH_SHORT).show();
             }
 
         });

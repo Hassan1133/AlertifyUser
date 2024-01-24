@@ -16,27 +16,29 @@
             android:layout_alignParentEnd="true"
             android:src="@drawable/close" />
 
-
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/crime_type_layout"
+            android:id="@+id/crimeTypeLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/closeBtn"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="40dp"
-            android:layout_marginEnd="20dp"
-            android:hint="@string/crime_type_hint"
+            android:layout_marginEnd="10dp"
             android:textColorHint="@color/hint_color"
             app:boxBackgroundColor="@color/white"
             app:boxStrokeColor="@color/hint_color"
             app:endIconTint="@color/hint_color"
+            app:startIconDrawable="@drawable/mic"
+            app:hintEnabled="false"
             app:hintTextColor="@color/hint_color">
 
             <AutoCompleteTextView
                 android:id="@+id/crimeType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:hint="@string/crime_type_hint"
                 android:inputType="none"
                 android:textColor="@color/hint_color" />
 
@@ -44,23 +46,27 @@
 
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/crime_details_layout"
+            android:id="@+id/crimeDetailsLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/crime_type_layout"
-            android:layout_marginStart="20dp"
+            android:layout_below="@+id/crimeTypeLayout"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="20dp"
-            android:hint="@string/crime_details_hint"
+            android:layout_marginEnd="10dp"
             android:textColorHint="@color/hint_color"
             app:boxStrokeColor="@color/hint_color"
+            app:startIconDrawable="@drawable/mic"
+            app:endIconMode="custom"
+            app:hintEnabled="false"
             app:hintTextColor="@color/hint_color">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/crimeDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="@string/crime_details_hint"
+                android:textSize="14sp"
                 android:textColor="@color/hint_color"
                 android:textCursorDrawable="@drawable/cursor_shape" />
 
@@ -71,14 +77,15 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/crime_details_layout"
-            android:layout_marginStart="20dp"
+            android:layout_below="@+id/crimeDetailsLayout"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="20dp"
-            android:hint="@string/crime_date_hint"
+            android:layout_marginEnd="10dp"
+            app:endIconDrawable="@drawable/date_icon"
+            app:hintEnabled="false"
             android:textColorHint="@color/hint_color"
             app:boxStrokeColor="@color/hint_color"
-            app:endIconDrawable="@drawable/date_icon"
+            app:startIconDrawable="@drawable/mic"
             app:endIconMode="custom"
             app:hintTextColor="@color/hint_color">
 
@@ -87,6 +94,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:enabled="false"
+                android:textSize="14sp"
+                android:hint="@string/crime_date_hint"
                 android:textColor="@color/hint_color"
                 android:textCursorDrawable="@drawable/cursor_shape" />
 
@@ -99,13 +108,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/crimeDateTimeLayout"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="20dp"
-            android:hint="@string/crime_location_hint"
+            android:layout_marginEnd="10dp"
             android:textColorHint="@color/hint_color"
             app:boxStrokeColor="@color/hint_color"
             app:endIconDrawable="@drawable/location"
+            app:hintEnabled="false"
             app:endIconMode="custom"
             app:hintTextColor="@color/hint_color">
 
@@ -113,6 +122,8 @@
                 android:id="@+id/crimeLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="@string/crime_location_hint"
+                android:textSize="14sp"
                 android:enabled="false"
                 android:textColor="@color/hint_color" />
 
@@ -125,11 +136,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/crimeLocationLayout"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="20dp"
-            android:hint="@string/crime_evidence_hint"
+            android:layout_marginEnd="10dp"
             android:textColorHint="@color/hint_color"
+            app:hintEnabled="false"
             app:boxStrokeColor="@color/hint_color"
             app:endIconDrawable="@drawable/attach_file"
             app:endIconMode="custom"
@@ -139,6 +150,8 @@
                 android:id="@+id/crimeEvidence"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="@string/crime_evidence_hint"
+                android:textSize="14sp"
                 android:enabled="false"
                 android:textColor="@color/hint_color" />
 
@@ -149,9 +162,9 @@
             android:layout_width="match_parent"
             android:layout_height="50sp"
             android:layout_below="@id/crimeEvidenceLayout"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
             android:backgroundTint="@color/app_color"
             android:text="@string/report_crime"
             android:textAllCaps="false"
