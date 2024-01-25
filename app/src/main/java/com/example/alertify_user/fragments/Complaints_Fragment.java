@@ -200,6 +200,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
         complaintDialogBinding = ComplaintDialogBinding.inflate(LayoutInflater.from(getActivity()));
         complaintDialog = new Dialog(getActivity());
         complaintDialog.setContentView(complaintDialogBinding.getRoot());
+        complaintDialog.setCancelable(false);
         complaintDialog.show();
         complaintDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
