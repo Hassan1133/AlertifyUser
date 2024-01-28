@@ -55,7 +55,7 @@ public class ComplaintsDetailsActivity extends AppCompatActivity implements View
         binding.detailsCrimeType.setText(complaintModel.getCrimeType());
         binding.detailsCrime.setText(complaintModel.getCrimeDetails());
         binding.detailsCrimeLocation.setText(complaintModel.getCrimeLocation());
-        binding.detailsCrimeDateTime.setText(complaintModel.getCrimeDateTime());
+//        binding.detailsCrimeDateTime.setText(complaintModel.getCrimeDateTime());
         binding.detailsComplaintPoliceStation.setText(complaintModel.getPoliceStation());
         binding.detailsComplaintDateTime.setText(complaintModel.getComplaintDateTime());
     }

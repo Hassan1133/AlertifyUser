@@ -1,6 +1,7 @@
 package com.example.alertify_user.fragments;
 
 import static com.example.alertify_user.constants.Constants.EVIDENCE_FILE_SIZE_LIMIT;
+import static com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_KEYBOARD;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -8,20 +9,16 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.speech.RecognizerIntent;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AutoCompleteTextView;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -31,13 +28,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.alertify_user.R;
 import com.example.alertify_user.adapters.ComplaintsAdapter;
 import com.example.alertify_user.adapters.DropDownAdapter;
 import com.example.alertify_user.databinding.ComplaintDialogBinding;
 import com.example.alertify_user.databinding.ComplaintsFragmentBinding;
+import com.example.alertify_user.interfaces.RecognitionCallback;
+import com.example.alertify_user.interfaces.TranslationCallback;
+import com.example.alertify_user.main_utils.LanguageTranslator;
 import com.example.alertify_user.main_utils.LatLngWrapper;
 import com.example.alertify_user.main_utils.LoadingDialog;
 import com.example.alertify_user.main_utils.LocationPermissionUtils;
@@ -51,9 +50,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -64,7 +64,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.maps.android.PolyUtil;
-import com.kunzisoft.switchdatetime.SwitchDateTimeDialogFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -72,7 +71,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Complaints_Fragment extends Fragment implements View.OnClickListener {
 
@@ -90,12 +90,10 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
     private LocationPermissionUtils permissionUtils;
     private StorageReference firebaseStorageReference;
     private DatabaseReference complaintsRef;
-    private SwitchDateTimeDialogFragment dateTimeFragment;
-    private static final String TAG = "Complaints_Fragment";
-    private static final String TAG_DATETIME_FRAGMENT = "TAG_DATETIME_FRAGMENT";
     private List<ComplaintModel> complaints;
     private ComplaintsAdapter complaintsAdapter;
     private Uri evidenceUri;
+    private RecognitionCallback recognitionCallback;
 
     @Nullable
     @Override
@@ -120,64 +118,11 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
 
         firebaseStorageReference = FirebaseStorage.getInstance().getReference();
 
-        dateAndTimePicker();
-
         complaints = new ArrayList<ComplaintModel>();
 
         binding.complaintsRecycler.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
         fetchComplaintsData();
-    }
-
-    // Method for date and time picker dialog
-    private void dateAndTimePicker() {
-        // Construct SwitchDateTimePicker
-        dateTimeFragment = (SwitchDateTimeDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(TAG_DATETIME_FRAGMENT);
-        if (dateTimeFragment == null) {
-            dateTimeFragment = SwitchDateTimeDialogFragment.newInstance(
-                    getString(R.string.label_datetime_dialog),
-                    getString(android.R.string.ok),
-                    getString(android.R.string.cancel),
-                    getString(R.string.clean),// Optional
-                    "en"
-            );
-        }
-
-        // Optionally define a timezone
-        dateTimeFragment.setTimeZone(TimeZone.getDefault());
-
-        // Init format
-        final SimpleDateFormat myDateFormat = new SimpleDateFormat("d MMM yyyy hh:mm a", java.util.Locale.getDefault());
-        // Assign unmodifiable values
-        dateTimeFragment.set24HoursMode(false);
-        dateTimeFragment.setHighlightAMPMSelection(false);
-
-        // Define new day and month format
-        try {
-            dateTimeFragment.setSimpleDateMonthAndDayFormat(new SimpleDateFormat("MMMM dd", Locale.getDefault()));
-        } catch (SwitchDateTimeDialogFragment.SimpleDateMonthAndDayFormatException e) {
-            Log.e(TAG, e.getMessage());
-        }
-
-        // Set listener for date
-        // Or use dateTimeFragment.setOnButtonClickListener(new SwitchDateTimeDialogFragment.OnButtonClickListener() {
-        dateTimeFragment.setOnButtonClickListener(new SwitchDateTimeDialogFragment.OnButtonWithNeutralClickListener() {
-            @Override
-            public void onPositiveButtonClick(Date date) {
-                complaintDialogBinding.crimeDateTime.setText(myDateFormat.format(date));
-            }
-
-            @Override
-            public void onNegativeButtonClick(Date date) {
-                // Do nothing
-            }
-
-            @Override
-            public void onNeutralButtonClick(Date date) {
-                // Optional if neutral button does not exists
-                complaintDialogBinding.crimeDateTime.setText("");
-            }
-        });
     }
 
     @Override
@@ -225,12 +170,120 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
 
         });
 
-        complaintDialogBinding.crimeDateTimeLayout.setEndIconOnClickListener(new View.OnClickListener() {
+        complaintDialogBinding.crimeTypeVoiceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dateTimeFragment.startAtCalendarView();
-                dateTimeFragment.setDefaultDateTime(Calendar.getInstance().getTime());
-                dateTimeFragment.show(getActivity().getSupportFragmentManager(), TAG_DATETIME_FRAGMENT);
+                startVoiceRecognition(new RecognitionCallback() {
+                    @Override
+                    public void onRecognitionComplete(String result) {
+                        if (!TextUtils.isEmpty(result)) {
+                            if (crimesList.contains(result)) {
+                                complaintDialogBinding.crimeType.setText(result);
+                            } else {
+                                Toast.makeText(getActivity(), result + " does not exist in the list", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(getActivity(), "Voice recognition failed", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onRecognitionFailure(String errorMessage) {
+                        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+
+        complaintDialogBinding.crimeDateLayout.setEndIconOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getDateFromDatePicker();
+            }
+        });
+        complaintDialogBinding.crimeTimeLayout.setEndIconOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getTimeFromTimePicker();
+            }
+        });
+
+        complaintDialogBinding.crimeTimeVoiceBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startVoiceRecognition(new RecognitionCallback() {
+                    @Override
+                    public void onRecognitionComplete(String result) {
+                        if (!result.isEmpty()) {
+                            String formattedTime = formatSpeechTime(result);
+                            if (formattedTime != null) {
+                                // Set the formatted time to your field
+                                complaintDialogBinding.crimeTime.setText(formattedTime);
+                            } else {
+                                // Handle invalid time format
+                                Toast.makeText(getActivity(), "Invalid time format", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(getActivity(), "Voice recognition failed", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onRecognitionFailure(String errorMessage) {
+                        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+        complaintDialogBinding.crimeDateVoiceBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startVoiceRecognition(new RecognitionCallback() {
+                    @Override
+                    public void onRecognitionComplete(String result) {
+                        if (!result.isEmpty()) {
+                            String correctedDate = correctMonthSpelling(result);
+                            if (correctedDate != null) {
+                                // Set the formatted time to your field
+
+                                complaintDialogBinding.crimeDate.setText(correctedDate);
+                            } else {
+                                // Handle invalid time format
+                                Toast.makeText(getActivity(), "Invalid date format", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(getActivity(), "Voice recognition failed", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onRecognitionFailure(String errorMessage) {
+                        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+
+        complaintDialogBinding.crimeDetailsLayout.setEndIconOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startVoiceRecognitionTranslation(new RecognitionCallback() {
+                    @Override
+                    public void onRecognitionComplete(String result) {
+                        if (!result.isEmpty()) {
+
+                            complaintDialogBinding.crimeDetails.setText(result);
+
+                        } else {
+                            Toast.makeText(getActivity(), "Voice recognition failed", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onRecognitionFailure(String errorMessage) {
+                        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 
@@ -241,30 +294,6 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
             }
 
         });
-        complaintDialogBinding.crimeTypeLayout.setStartIconOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getActivity(), "hello", Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
-        complaintDialogBinding.crimeDetailsLayout.setStartIconOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getActivity(), "hello", Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
-        complaintDialogBinding.crimeDateTimeLayout.setStartIconOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getActivity(), "hello", Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
         complaintDialogBinding.closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -275,11 +304,75 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
             @Override
             public void onClick(View v) {
                 if (isDataValid()) {
-                    LoadingDialog.showLoadingDialog(getActivity());
-                    getPoliceStationsData();
+//                    LoadingDialog.showLoadingDialog(getActivity());
+//                    getPoliceStationsData();
                 }
             }
         });
+    }
+
+    // Helper method for month spelling correction
+    private String correctMonthSpelling(String inputDate) {
+        // Replace "mai" with "May" only
+        // (?i): This is a flag indicating a case-insensitive match. It means that the regular expression engine will match "mai" regardless of whether it is uppercase, lowercase, or a mix of both.
+        return inputDate.replaceAll("(?i)mai", "May");
+    }
+
+    private void getDateFromDatePicker() {
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText(R.string.select_date)
+                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .build();
+
+        datePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Long>() {
+            @Override
+            public void onPositiveButtonClick(Long selection) {
+
+                complaintDialogBinding.crimeDate.setText(new SimpleDateFormat("d MMM yyyy", Locale.getDefault()).format(new Date(selection)));
+            }
+        });
+
+        datePicker.show(getChildFragmentManager(), "tag");
+    }
+
+    private String formatSpeechTime(String recognizedText) {
+        // Use regular expression to match the desired time format (e.g., 4:45 AM)
+        Matcher matcher = Pattern.compile("([1-9]|1[0-2])\\s*:\\s*([0-5]?[0-9])\\s*([aApP][mM])").matcher(recognizedText.replaceAll("\\.", ""));
+
+        if (matcher.find()) {
+            // Format the time as needed
+            // 04 : 45 AM
+            return matcher.group(1) + ":" + matcher.group(2) + " " + matcher.group(3).toUpperCase();
+        } else {
+            return null; // Return null for invalid time format
+        }
+    }
+
+    private void getTimeFromTimePicker() {
+
+        // Create a TimePickerDialog with MaterialTimePicker
+        MaterialTimePicker materialTimePicker = new MaterialTimePicker.Builder()
+                .setTimeFormat(TimeFormat.CLOCK_12H)
+                .setHour(Calendar.getInstance().HOUR_OF_DAY)
+                .setMinute(Calendar.getInstance().MINUTE)
+                .setTitleText(R.string.select_time)
+                .build();
+
+        materialTimePicker.addOnPositiveButtonClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String amPm = (materialTimePicker.getHour() >= 12) ? "PM" : "AM";
+                // Format the selected time in 12-hour format
+                int formattedHour = (materialTimePicker.getHour() == 0 || materialTimePicker.getHour() == 12) ? 12 : materialTimePicker.getHour() % 12;
+
+                // Display the formatted time
+                complaintDialogBinding.crimeTime.setText(String.format("%02d:%02d %s", formattedHour, materialTimePicker.getMinute(), amPm));
+
+            }
+        });
+
+        materialTimePicker.show(getChildFragmentManager(), "TIME_PICKER_TAG");
+
     }
 
     private void getPoliceStationsData() {
@@ -351,7 +444,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
         complaintModel = new ComplaintModel();
         complaintModel.setCrimeType(complaintDialogBinding.crimeType.getText().toString());
         complaintModel.setCrimeDetails(complaintDialogBinding.crimeDetails.getText().toString().trim());
-        complaintModel.setCrimeDateTime(complaintDialogBinding.crimeDateTime.getText().toString());
+//        complaintModel.setCrimeDateTime(complaintDialogBinding.crimeDateTime.getText().toString());
         complaintModel.setComplaintDateTime(getCurrentDateTime());
         complaintModel.setCrimeLatitude(selectedCrimeLatitude);
         complaintModel.setCrimeLongitude(selectedCrimeLongitude);
@@ -364,12 +457,9 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
     }
 
     private String getCurrentDateTime() {
-        // Get the current date and time
-        Date currentDate = new Date();
-
         // Create a SimpleDateFormat to format the date and time as desired
         SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy hh:mm a");
-        String formattedDate = dateFormat.format(currentDate);
+        String formattedDate = dateFormat.format(new Date());
         return formattedDate;
     }
 
@@ -440,8 +530,12 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
             complaintDialogBinding.crimeDetails.setError("Please enter crime details");
             valid = false;
         }
-        if (complaintDialogBinding.crimeDateTime.getText().length() == 0) {
-            Toast.makeText(getActivity(), "Please select crime date and time", Toast.LENGTH_SHORT).show();
+        if (complaintDialogBinding.crimeTime.getText().length() == 0) {
+            Toast.makeText(getActivity(), "Please select crime time", Toast.LENGTH_SHORT).show();
+            valid = false;
+        }
+        if (complaintDialogBinding.crimeDate.getText().length() == 0) {
+            Toast.makeText(getActivity(), "Please select crime date", Toast.LENGTH_SHORT).show();
             valid = false;
         }
         if (complaintDialogBinding.crimeLocation.getText().length() == 0) {
@@ -468,7 +562,6 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
                     CrimesModel crimesModel = dataSnapshot.getValue(CrimesModel.class);
 
                     crimesList.add(crimesModel.getCrimeType());
-
                 }
             }
 
@@ -504,7 +597,6 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
                 } else {
                     Toast.makeText(getActivity(), "File size exceeds the limit (5MB)", Toast.LENGTH_SHORT).show();
                 }
-
 
             } else {
 
@@ -578,4 +670,68 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
         complaintsAdapter = new ComplaintsAdapter(getActivity(), complaints);
         binding.complaintsRecycler.setAdapter(complaintsAdapter);
     }
+
+    private void startVoiceRecognition(RecognitionCallback callback) {
+
+        this.recognitionCallback = callback;
+
+        // Start Speech Recognition Intent
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault()); // Specify the language, for example, en-US for English
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak something...");
+
+        voiceRecognitionResultLauncher.launch(intent);
+    }
+
+    private void startVoiceRecognitionTranslation(RecognitionCallback callback) {
+
+        this.recognitionCallback = callback;
+
+        // Start Speech Recognition Intent
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ur-PK"); // Specify the language, for example, en-US for English
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak something...");
+
+        voiceRecognitionTranslationResultLauncher.launch(intent);
+    }
+
+    private final ActivityResultLauncher<Intent> voiceRecognitionTranslationResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                ArrayList<String> recognizedResult = result.getData().getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+//              LanguageTranslator to translate the recognized text
+                LanguageTranslator.translateText(recognizedResult.get(0), getActivity(), new TranslationCallback() {
+                    @Override
+                    public void onTranslationComplete(String translatedText) {
+                        if (recognitionCallback != null) {
+                            recognitionCallback.onRecognitionComplete(translatedText);
+                        }
+                    }
+
+                    @Override
+                    public void onTranslationFailure(String errorMessage) {
+                        if (recognitionCallback != null) {
+                            recognitionCallback.onRecognitionFailure(errorMessage);
+                        }
+                    }
+                });
+
+                recognizedResult.clear();
+            }
+        }
+    });
+
+    private final ActivityResultLauncher<Intent> voiceRecognitionResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                ArrayList<String> recognizedTimeResult = result.getData().getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                recognitionCallback.onRecognitionComplete(recognizedTimeResult.get(0));
+                recognizedTimeResult.clear();
+            }
+        }
+    });
 }

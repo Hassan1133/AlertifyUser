@@ -13,7 +13,8 @@ public class ComplaintModel implements Serializable {
     private double crimeLongitude;
     private String policeStation;
     private String userId;
-    private String CrimeDateTime;
+    private String CrimeDate;
+    private String CrimeTime;
     private String complaintDateTime;
     private String investigationStatus;
     private String feedback;
@@ -32,14 +33,6 @@ public class ComplaintModel implements Serializable {
 
     public void setInvestigationStatus(String investigationStatus) {
         this.investigationStatus = investigationStatus;
-    }
-
-    public String getCrimeDateTime() {
-        return CrimeDateTime;
-    }
-
-    public void setCrimeDateTime(String crimeDateTime) {
-        this.CrimeDateTime = crimeDateTime;
     }
 
     public String getComplaintDateTime() {
@@ -128,5 +121,21 @@ public class ComplaintModel implements Serializable {
 
     public void setEvidenceType(String evidenceType) {
         this.evidenceType = evidenceType;
+    }
+
+    public String getCrimeDate() {
+        return CrimeDate;
+    }
+
+    public void setCrimeDate(String crimeDate) {
+        CrimeDate = crimeDate;
+    }
+
+    public String getCrimeTime() {
+        return CrimeTime;
+    }
+
+    public void setCrimeTime(String crimeTime) {
+        CrimeTime = crimeTime;
     }
 }

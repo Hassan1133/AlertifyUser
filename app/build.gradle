@@ -55,6 +55,9 @@ dependencies {
     // map utils
     implementation 'com.google.maps.android:android-maps-utils:2.2.0'
 
+    // google MLKit
+    implementation 'com.google.mlkit:translate:17.0.2'
+
     //    lottieFiles
     def lottieVersion = "3.4.0"
     implementation "com.airbnb.android:lottie:$lottieVersion"
@@ -68,10 +71,6 @@ dependencies {
 
     // dexter
     implementation 'com.karumi:dexter:6.2.3'
-
-    // date and time picker
-    implementation 'com.github.Kunzisoft:Android-SwitchDateTimePicker:2.1'
-
 
     //    clk progress library
     implementation 'com.github.colakcode:clkProgress:v1.0'

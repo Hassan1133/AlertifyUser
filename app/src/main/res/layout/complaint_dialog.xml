@@ -32,7 +32,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toStartOf="@id/voiceBtn"
+                android:layout_toStartOf="@id/crimeTypeVoiceBtn"
                 android:textColorHint="@color/hint_color"
                 app:boxBackgroundColor="@color/white"
                 app:boxStrokeWidth="0dp"
@@ -53,7 +53,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/voiceBtn"
+                android:id="@+id/crimeTypeVoiceBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -68,7 +68,7 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/crimeDateTimeParentLayout"
+            android:id="@+id/crimeDateParentLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/crimeTypeParentLayout"
@@ -80,7 +80,7 @@
             >
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/crimeDateTimeLayout"
+                android:id="@+id/crimeDateLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -89,12 +89,12 @@
                 app:boxStrokeWidthFocused="0dp"
                 app:endIconDrawable="@drawable/date_icon"
                 app:endIconMode="custom"
-                android:layout_toStartOf="@+id/crimeDateTimeVoiceBtn"
+                android:layout_toStartOf="@+id/crimeDateVoiceBtn"
                 app:hintEnabled="false"
                 app:hintTextColor="@color/hint_color">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/crimeDateTime"
+                    android:id="@+id/crimeDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:enabled="false"
@@ -106,7 +106,60 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/crimeDateTimeVoiceBtn"
+                android:id="@+id/crimeDateVoiceBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/mic"
+                app:backgroundTint="@color/white"
+                app:borderWidth="0dp"
+                app:elevation="0dp"
+                android:layout_centerVertical="true"
+                app:fabSize="mini"
+                app:tint="@color/hint_color" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/crimeTimeParentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/crimeDateParentLayout"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/text_field_shape"
+            android:padding="2dp"
+            >
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/crimeTimeLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColorHint="@color/hint_color"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp"
+                app:endIconDrawable="@drawable/time"
+                app:endIconMode="custom"
+                android:layout_toStartOf="@+id/crimeTimeVoiceBtn"
+                app:hintEnabled="false"
+                app:hintTextColor="@color/hint_color">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/crimeTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:hint="@string/crime_time_hint"
+                    android:textColor="@color/hint_color"
+                    android:textCursorDrawable="@drawable/cursor_shape"
+                    android:textSize="14sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/crimeTimeVoiceBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -125,7 +178,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/crimeDateTimeParentLayout"
+            android:layout_below="@+id/crimeTimeParentLayout"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
