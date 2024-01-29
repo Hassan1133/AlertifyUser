@@ -8,17 +8,23 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.example.alertify_user.R;
 import com.example.alertify_user.databinding.ActivityMapsBinding;
+import com.example.alertify_user.interfaces.RecognitionCallback;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,10 +34,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener {
 
     private GoogleMap googleMap;
     private ActivityMapsBinding binding;
@@ -41,6 +48,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private SupportMapFragment mapFragment;
 
+    private RecognitionCallback recognitionCallback;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,11 +57,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        init();
+    }
+
+    private void init()
+    {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         searchLocation();
+
+        binding.searchVoiceBtn.setOnClickListener(this);
     }
 
     @Override
@@ -94,6 +110,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public boolean onQueryTextSubmit(String query) {
 
+                googleMap.clear();
+
                 if (checkConnection()) {
                     String location = binding.searchView.getQuery().toString();
                     List<Address> addressList = null;
@@ -111,7 +129,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Address address = addressList.get(0);
                             LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
                             googleMap.addMarker(new MarkerOptions().position(latLng).title(location));
-                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
                         } else {
                             Toast.makeText(MapsActivity.this, "Please select a valid location", Toast.LENGTH_SHORT).show();
                         }
@@ -175,4 +193,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        switch(v.getId())
+        {
+            case R.id.searchVoiceBtn:
+                startVoiceRecognition(new RecognitionCallback() {
+                    @Override
+                    public void onRecognitionComplete(String result) {
+                        if (!result.isEmpty()) {
+                            binding.searchView.setQuery(result, true);
+                        } else {
+                            Toast.makeText(MapsActivity.this, "Voice recognition failed", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onRecognitionFailure(String errorMessage) {
+                        Toast.makeText(MapsActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                break;
+        }
+    }
+
+    private void startVoiceRecognition(RecognitionCallback callback) {
+
+        this.recognitionCallback = callback;
+
+        // Start Speech Recognition Intent
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault()); // Specify the language, for example, en-US for English
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak something...");
+
+        voiceRecognitionResultLauncher.launch(intent);
+    }
+
+    private final ActivityResultLauncher<Intent> voiceRecognitionResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                ArrayList<String> recognizedTimeResult = result.getData().getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                recognitionCallback.onRecognitionComplete(recognizedTimeResult.get(0));
+                recognizedTimeResult.clear();
+            }
+        }
+    });
 }

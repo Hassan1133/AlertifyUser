@@ -12,20 +12,41 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/searchView"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        app:queryBackground="@color/transparent"
-        android:background="@drawable/search_view"
-        android:elevation="3dp"
-        android:theme="@style/search_view_style"
-        app:iconifiedByDefault="false"
-        app:queryHint="@string/search" />
+        android:background="@drawable/search_view">
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@+id/searchVoiceBtn"
+            android:elevation="3dp"
+            android:theme="@style/search_view_style"
+            app:iconifiedByDefault="false"
+            app:queryBackground="@color/transparent"
+            app:queryHint="@string/search" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/searchVoiceBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="5dp"
+            android:src="@drawable/mic"
+            app:backgroundTint="@color/lighter_grey"
+            app:borderWidth="0dp"
+            app:elevation="0dp"
+            app:fabSize="mini"
+            app:tint="@color/hint_color" />
+
+    </RelativeLayout>
 
 </RelativeLayout>
 

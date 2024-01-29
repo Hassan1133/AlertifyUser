@@ -304,8 +304,8 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
             @Override
             public void onClick(View v) {
                 if (isDataValid()) {
-//                    LoadingDialog.showLoadingDialog(getActivity());
-//                    getPoliceStationsData();
+                    LoadingDialog.showLoadingDialog(getActivity());
+                    getPoliceStationsData();
                 }
             }
         });
@@ -444,7 +444,8 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
         complaintModel = new ComplaintModel();
         complaintModel.setCrimeType(complaintDialogBinding.crimeType.getText().toString());
         complaintModel.setCrimeDetails(complaintDialogBinding.crimeDetails.getText().toString().trim());
-//        complaintModel.setCrimeDateTime(complaintDialogBinding.crimeDateTime.getText().toString());
+        complaintModel.setCrimeDate(complaintDialogBinding.crimeDate.getText().toString());
+        complaintModel.setCrimeTime(complaintDialogBinding.crimeTime.getText().toString());
         complaintModel.setComplaintDateTime(getCurrentDateTime());
         complaintModel.setCrimeLatitude(selectedCrimeLatitude);
         complaintModel.setCrimeLongitude(selectedCrimeLongitude);

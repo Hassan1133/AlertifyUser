@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -21,6 +22,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.alertify_user.R;
 import com.example.alertify_user.databinding.ActivityComplaintsDetailsBinding;
+import com.example.alertify_user.databinding.ComplaintDialogBinding;
+import com.example.alertify_user.databinding.ComplaintFeedbackDialogBinding;
 import com.example.alertify_user.models.ComplaintModel;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -30,8 +33,7 @@ public class ComplaintsDetailsActivity extends AppCompatActivity implements View
     private ComplaintModel complaintModel;
     private String evidenceUrl, evidenceType;
     private Dialog feedBackDialog;
-
-    private TextInputEditText feedback;
+    private ComplaintFeedbackDialogBinding complaintFeedbackDialogBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +57,8 @@ public class ComplaintsDetailsActivity extends AppCompatActivity implements View
         binding.detailsCrimeType.setText(complaintModel.getCrimeType());
         binding.detailsCrime.setText(complaintModel.getCrimeDetails());
         binding.detailsCrimeLocation.setText(complaintModel.getCrimeLocation());
-//        binding.detailsCrimeDateTime.setText(complaintModel.getCrimeDateTime());
+        binding.detailsCrimeDate.setText(complaintModel.getCrimeDate());
+        binding.detailsCrimeTime.setText(complaintModel.getCrimeTime());
         binding.detailsComplaintPoliceStation.setText(complaintModel.getPoliceStation());
         binding.detailsComplaintDateTime.setText(complaintModel.getComplaintDateTime());
     }
@@ -100,13 +103,13 @@ public class ComplaintsDetailsActivity extends AppCompatActivity implements View
     }
 
     private void createFeedBackDialog() {
+        complaintFeedbackDialogBinding = ComplaintFeedbackDialogBinding.inflate(LayoutInflater.from(ComplaintsDetailsActivity.this));
         feedBackDialog = new Dialog(ComplaintsDetailsActivity.this);
-        feedBackDialog.setContentView(R.layout.complaint_feedback_dialog);
+        feedBackDialog.setContentView(complaintFeedbackDialogBinding.getRoot());
         feedBackDialog.show();
         feedBackDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        feedback = feedBackDialog.findViewById(R.id.report_feedback);
-        binding.feedBack.setText(complaintModel.getFeedback());
+        complaintFeedbackDialogBinding.reportFeedback.setText(complaintModel.getFeedback());
     }
 
     private String getFileType()

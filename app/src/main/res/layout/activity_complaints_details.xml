@@ -144,21 +144,21 @@
             android:layout_marginTop="20dp" />
 
         <TextView
-            android:id="@+id/crime_date_time_heading"
+            android:id="@+id/crime_date_heading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/crime_location_underline"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            android:text="Crime DateTime"
+            android:text="@string/crime_date_hint"
             android:textColor="@color/black"
             android:textSize="17sp" />
 
         <TextView
-            android:id="@+id/detailsCrimeDateTime"
+            android:id="@+id/detailsCrimeDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/crime_date_time_heading"
+            android:layout_below="@+id/crime_date_heading"
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="20dp"
@@ -166,17 +166,45 @@
             android:textSize="15sp" />
 
         <com.google.android.material.divider.MaterialDivider
-            android:id="@+id/crime_date_time_underline"
+            android:id="@+id/crime_date_underline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/detailsCrimeDateTime"
+            android:layout_below="@+id/detailsCrimeDate"
+            android:layout_marginTop="20dp" />
+        <TextView
+            android:id="@+id/crime_time_heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/crime_date_underline"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/crime_time_hint"
+            android:textColor="@color/black"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/detailsCrimeTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/crime_time_heading"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            android:textColor="@color/hint_color"
+            android:textSize="15sp" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/crime_time_underline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/detailsCrimeTime"
             android:layout_marginTop="20dp" />
 
         <TextView
             android:id="@+id/complaint_police_station_heading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/crime_date_time_underline"
+            android:layout_below="@+id/crime_time_underline"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:text="Complaint Police Station"
