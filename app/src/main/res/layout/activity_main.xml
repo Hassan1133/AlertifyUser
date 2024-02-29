@@ -25,6 +25,7 @@
         app:menu="@menu/bottom_menu"
         android:background="@color/app_color"
         app:itemTextColor="@color/bottom_nav_colors"
+        app:labelVisibilityMode="selected"
         app:itemIconTint="@color/bottom_nav_colors"
         android:layout_alignParentBottom="true"
         />

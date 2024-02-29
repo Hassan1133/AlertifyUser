@@ -10,7 +10,7 @@
     <string name="select_item">Select Police Station</string>
     <string name="cancel">Cancel</string>
     <string name="login">Login</string>
-    <string name="sigup">Sogin</string>
+    <string name="signup">Sign-up</string>
     <string name="password_hint">enter atleast 6 words</string>
     <string name="user_name_hint">enter user name</string>
     <string name="ok">Ok</string>
@@ -35,4 +35,6 @@
     <string name="select_time">Select Time</string>
     <string name="download">Download</string>
     <string name="direction">Directions</string>
+    <string name="emergency_help_text">Emergency help needed?</string>
+    <string name="emergency_help_text_hint">Just press the button for emergency services</string>
 </resources>

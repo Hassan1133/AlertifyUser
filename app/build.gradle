@@ -74,4 +74,7 @@ dependencies {
 
     //    clk progress library
     implementation 'com.github.colakcode:clkProgress:v1.0'
+
+    //okhttp
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
 }

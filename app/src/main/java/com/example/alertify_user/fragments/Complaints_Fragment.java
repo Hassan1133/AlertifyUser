@@ -313,9 +313,17 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
 
     // Helper method for month spelling correction
     private String correctMonthSpelling(String inputDate) {
-        // Replace "mai" with "May" only
-        // (?i): This is a flag indicating a case-insensitive match. It means that the regular expression engine will match "mai" regardless of whether it is uppercase, lowercase, or a mix of both.
-        return inputDate.replaceAll("(?i)mai", "May");
+        // Define a regular expression for the expected date format
+        String regex = "(\\d{1,2})\\s(January|February|March|April|May|Mai|June|July|August|September|October|November|December)\\s(\\d{4})";
+
+        // Check if the inputDate matches the expected format
+        if (inputDate.matches(regex)) {
+            // Replace "mai" with "May" only
+            // (?i): This is a flag indicating a case-insensitive match. It means that the regular expression engine will match "mai" regardless of whether it is uppercase, lowercase, or a mix of both.
+            return inputDate.replaceAll("(?i)mai", "May");
+        } else {
+            return null; // Return null for invalid date format
+        }
     }
 
     private void getDateFromDatePicker() {
@@ -418,7 +426,6 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
                 LoadingDialog.hideLoadingDialog();
                 Toast.makeText(getActivity(), "No police station found regarding your location", Toast.LENGTH_SHORT).show();
             }
-
         }
     }
 

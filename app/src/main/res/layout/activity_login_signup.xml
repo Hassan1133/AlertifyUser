@@ -39,9 +39,9 @@
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:background="@drawable/login_signup_shape"
-            app:tabIndicatorColor="#3490DC"
-            app:tabTextColor="#676767"
-            app:tabSelectedTextColor="#3490DC">
+            app:tabIndicatorColor="@color/app_color"
+            app:tabTextColor="@color/app_color"
+            app:tabSelectedTextColor="@color/app_color">
 
         </com.google.android.material.tabs.TabLayout>
 

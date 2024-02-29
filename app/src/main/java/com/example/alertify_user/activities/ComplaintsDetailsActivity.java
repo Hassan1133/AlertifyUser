@@ -40,7 +40,6 @@ public class ComplaintsDetailsActivity extends AppCompatActivity implements View
         super.onCreate(savedInstanceState);
         binding = ActivityComplaintsDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         init();
     }
 

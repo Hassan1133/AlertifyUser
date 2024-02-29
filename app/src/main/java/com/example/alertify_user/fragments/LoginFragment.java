@@ -176,8 +176,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         SharedPreferences userData = getContext().getSharedPreferences("userData", MODE_PRIVATE);
         SharedPreferences.Editor editor = userData.edit();
 
-        if (user != null)
-        {
+        if (user != null) {
             editor.putString("name", user.getName());
             editor.putString("email", user.getEmail());
             editor.putString("imgUrl", user.getImgUrl());

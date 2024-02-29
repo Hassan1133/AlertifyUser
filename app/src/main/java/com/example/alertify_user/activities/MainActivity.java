@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.example.alertify_user.R;
 import com.example.alertify_user.fragments.Complaints_Fragment;
+import com.example.alertify_user.fragments.EmergencyServiceFragment;
 import com.example.alertify_user.main_utils.LocationPermissionUtils;
 import com.example.alertify_user.main_utils.StoragePermissionUtils;
 import com.example.alertify_user.fragments.PoliceStationFragment;
@@ -169,6 +170,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         return true;
                     case R.id.records:
                         loadFragment(new Records_Fragment());
+                        return true;
+                    case R.id.emergency:
+                        loadFragment(new EmergencyServiceFragment());
                         return true;
                 }
                 return false;
