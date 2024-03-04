@@ -64,6 +64,7 @@ public class EditUserProfileActivity extends AppCompatActivity implements View.O
 
     private Dialog userUpdateImgDialog, userUpdateNameDialog, userUpdatePasswordDialog;
 
+    private Dialog loadingDialog;
     private ProgressBar userImgUpdateDialogProgressBar, userNameUpdateDialogProgressBar, userPasswordUpdateDialogProgressBar;
 
     private DatabaseReference userRef;
@@ -85,7 +86,6 @@ public class EditUserProfileActivity extends AppCompatActivity implements View.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_user_profile);
         init();
-        LoadingDialog.showLoadingDialog(EditUserProfileActivity.this);
     }
 
     private void init() {
@@ -113,6 +113,8 @@ public class EditUserProfileActivity extends AppCompatActivity implements View.O
         userData = getSharedPreferences("userData", MODE_PRIVATE);
 
         editor = userData.edit();
+
+        loadingDialog = LoadingDialog.showLoadingDialog(EditUserProfileActivity.this);
     }
 
     private void getProfileData(FirebaseUser firebaseUser) {
@@ -131,7 +133,7 @@ public class EditUserProfileActivity extends AppCompatActivity implements View.O
                     userCnicNo.setText(user.getCnicNo());
                     userPhoneNo.setText(user.getPhoneNo());
 
-                    LoadingDialog.hideLoadingDialog();
+                    LoadingDialog.hideLoadingDialog(loadingDialog);
                 }
 
             }

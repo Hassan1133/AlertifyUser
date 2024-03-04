@@ -29,15 +29,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/search_view" />
 
-    <ProgressBar
-        android:id="@+id/complaints_fragment_progressbar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:indeterminateTint="#3490DC"
-        android:visibility="invisible" />
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addComplaintBtn"
         android:layout_width="wrap_content"

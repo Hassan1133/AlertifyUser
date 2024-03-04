@@ -2,6 +2,7 @@ package com.example.alertify_user.fragments;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -68,6 +69,8 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
     private ArrayAdapter arrayAdapter;
 
     private LocationPermissionUtils permissionUtils;
+
+    private Dialog loadingDialog;
 
     @Nullable
     @Override
@@ -181,7 +184,6 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                LoadingDialog.hideLoadingDialog();
             }
         });
     }
@@ -204,7 +206,6 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
             }
 
             if (appropriatePoliceStationLocation == null) {
-                LoadingDialog.hideLoadingDialog();
                 Toast.makeText(getActivity(), "No police station found regarding your location", Toast.LENGTH_SHORT).show();
             }
 

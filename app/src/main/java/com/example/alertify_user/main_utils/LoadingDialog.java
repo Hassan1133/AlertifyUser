@@ -11,15 +11,24 @@ public class LoadingDialog {
 
     private static Dialog dialog;
 
-    public static void showLoadingDialog(Context context) {
+    public static Dialog showLoadingDialog(Context context) {
         dialog = new Dialog(context);
         dialog.setContentView(R.layout.loading_dialog);
-        dialog.show();
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setCancelable(false); // To prevent the dialog from being dismissed by touching outside
 
+        // Make the dialog background transparent
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        dialog.show();
+
+        return dialog;
     }
 
-    public static void hideLoadingDialog() {
-        dialog.dismiss();
+    public static void hideLoadingDialog(Dialog dialog) {
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
+        }
     }
 }

@@ -56,6 +56,8 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
 
     private DatabaseReference firebaseDatabaseReference;
 
+    private Dialog loadingDialog;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -147,7 +149,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
 
         if (isValid()) {
 
-            LoadingDialog.showLoadingDialog(getActivity());
+            loadingDialog = LoadingDialog.showLoadingDialog(getActivity());
 
             user = new UserModel();
             user.setName(binding.name.getText().toString().trim());
@@ -170,7 +172,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            LoadingDialog.hideLoadingDialog();
+                            LoadingDialog.hideLoadingDialog(loadingDialog);
                             Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -202,7 +204,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        LoadingDialog.hideLoadingDialog();
+                                        LoadingDialog.hideLoadingDialog(loadingDialog);
                                         Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 });
@@ -212,7 +214,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                        LoadingDialog.hideLoadingDialog();
+                        LoadingDialog.hideLoadingDialog(loadingDialog);
                     }
                 });
 
@@ -227,7 +229,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            LoadingDialog.hideLoadingDialog();
+                            LoadingDialog.hideLoadingDialog(loadingDialog);
                             Toast.makeText(getContext(), "Signed up Successfully", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getActivity(), LoginSignupActivity.class);
                             startActivity(intent);
@@ -237,7 +239,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        LoadingDialog.hideLoadingDialog();
+                        LoadingDialog.hideLoadingDialog(loadingDialog);
                         Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });

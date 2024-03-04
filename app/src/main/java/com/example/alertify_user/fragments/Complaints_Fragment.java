@@ -95,6 +95,8 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
     private Uri evidenceUri;
     private RecognitionCallback recognitionCallback;
 
+    private Dialog loadingDialog;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -402,7 +404,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                LoadingDialog.hideLoadingDialog();
+                LoadingDialog.hideLoadingDialog(loadingDialog);
             }
         });
     }
@@ -423,7 +425,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
             }
 
             if (appropriatePoliceStationName == null) {
-                LoadingDialog.hideLoadingDialog();
+                LoadingDialog.hideLoadingDialog(loadingDialog);
                 Toast.makeText(getActivity(), "No police station found regarding your location", Toast.LENGTH_SHORT).show();
             }
         }
@@ -490,7 +492,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                            LoadingDialog.hideLoadingDialog();
+                            LoadingDialog.hideLoadingDialog(loadingDialog);
                         }
                     });
                 }
@@ -498,7 +500,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    LoadingDialog.hideLoadingDialog();
+                    LoadingDialog.hideLoadingDialog(loadingDialog);
                 }
             });
         } else {
@@ -513,7 +515,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    LoadingDialog.hideLoadingDialog();
+                    LoadingDialog.hideLoadingDialog(loadingDialog);
                     Toast.makeText(getActivity(), "Complaint Reported successfully!", Toast.LENGTH_SHORT).show();
                     complaintDialog.dismiss();
                 }
@@ -522,7 +524,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                LoadingDialog.hideLoadingDialog();
+                LoadingDialog.hideLoadingDialog(loadingDialog);
             }
         });
     }
@@ -649,7 +651,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
 
     private void fetchComplaintsData() {
 
-        LoadingDialog.showLoadingDialog(getActivity());
+        loadingDialog = LoadingDialog.showLoadingDialog(getActivity());
 
         complaintsRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -661,7 +663,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
                     complaints.add(dataSnapshot.getValue(ComplaintModel.class));
                 }
 
-                LoadingDialog.hideLoadingDialog();
+                LoadingDialog.hideLoadingDialog(loadingDialog);
 
                 setDataToRecycler(complaints);
 

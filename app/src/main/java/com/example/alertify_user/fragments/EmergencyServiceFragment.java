@@ -1,6 +1,9 @@
 package com.example.alertify_user.fragments;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.Manifest;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -19,11 +22,15 @@ import com.example.alertify_user.databinding.FragmentEmergencyServiceBinding;
 import com.example.alertify_user.main_utils.LatLngWrapper;
 import com.example.alertify_user.main_utils.LoadingDialog;
 import com.example.alertify_user.models.DepAdminModel;
+import com.example.alertify_user.models.EmergencyServiceModel;
 import com.example.alertify_user.models.PoliceStationModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,7 +41,9 @@ import com.google.maps.android.PolyUtil;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import okhttp3.Call;
@@ -51,7 +60,7 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
     private FusedLocationProviderClient fusedLocationProviderClient;
     private double userCurrentLatitude;
     private double userCurrentLongitude;
-    private DatabaseReference policeStationsRef, depAdminRef;
+    private DatabaseReference policeStationsRef, depAdminRef, emergencyRequestsRef;
     private ArrayList<PoliceStationModel> policeStations;
     private ArrayList<DepAdminModel> depAdmins;
 
@@ -72,6 +81,7 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
         policeStations = new ArrayList<>();
         depAdmins = new ArrayList<>();
         depAdminRef = FirebaseDatabase.getInstance().getReference("AlertifyDepAdmin");
+        emergencyRequestsRef = FirebaseDatabase.getInstance().getReference("AlertifyEmergencyRequests");
     }
 
     @Override
@@ -92,9 +102,13 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
             @Override
             public void onSuccess(Location location) {
 
-                userCurrentLatitude = location.getLatitude();
-                userCurrentLongitude = location.getLongitude();
-                getPoliceStationsData();
+                if (location != null) {
+                    userCurrentLatitude = location.getLatitude();
+                    userCurrentLongitude = location.getLongitude();
+                    getPoliceStationsData();
+                } else {
+                    Toast.makeText(getActivity(), "Unable to retrieve location", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -118,7 +132,6 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                LoadingDialog.hideLoadingDialog();
             }
         });
     }
@@ -139,7 +152,6 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
             }
 
             if (appropriatePoliceStationName == null) {
-                LoadingDialog.hideLoadingDialog();
                 Toast.makeText(getActivity(), "No police station found regarding your location", Toast.LENGTH_SHORT).show();
             }
 
@@ -165,21 +177,16 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                LoadingDialog.hideLoadingDialog();
             }
         });
     }
 
     private void getAppropriateDepAdminData(String policeStation, ArrayList<DepAdminModel> depAdmins) {
 
-        Toast.makeText(getActivity(), policeStation, Toast.LENGTH_SHORT).show();
-
-
-        for(DepAdminModel depAdmin : this.depAdmins)
-        {
-            if(depAdmin.getDepAdminPoliceStation().matches(policeStation))
-            {
+        for (DepAdminModel depAdmin : this.depAdmins) {
+            if (depAdmin.getDepAdminPoliceStation().matches(policeStation)) {
                 sendNotification(depAdmin.getDepAdminFCMToken());
+                setEmergencyRequestToModel();
                 return;
             }
         }
@@ -191,6 +198,7 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
         }
         return false;
     }
+
     private List<LatLng> convertLatLngWrapperList(List<LatLngWrapper> latLngWrapperList) {
         List<LatLng> latLngList = new ArrayList<>();
 
@@ -216,7 +224,6 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
 
             callApi(jsonObject);
 
-
         } catch (Exception e) {
 
         }
@@ -235,13 +242,65 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-
             }
         });
+    }
+
+    private void setEmergencyRequestToModel() {
+        if (appropriatePoliceStationName != null && userCurrentLatitude != 0 && userCurrentLongitude != 0) {
+
+            SharedPreferences userData = getActivity().getSharedPreferences("userData", MODE_PRIVATE);
+
+            EmergencyServiceModel emergencyServiceModel = new EmergencyServiceModel();
+            emergencyServiceModel.setRequestId(emergencyRequestsRef.push().getKey());
+            emergencyServiceModel.setRequestStatus("unseen");
+            emergencyServiceModel.setRequestDateTime(getCurrentDateTime());
+            emergencyServiceModel.setUserId(userData.getString("id", ""));
+            emergencyServiceModel.setUserName(userData.getString("name", ""));
+            emergencyServiceModel.setUserEmail(userData.getString("email", ""));
+            emergencyServiceModel.setUserCnic(userData.getString("cnicNo", ""));
+            emergencyServiceModel.setUserPhoneNo(userData.getString("phoneNo", ""));
+            emergencyServiceModel.setPoliceStation(appropriatePoliceStationName);
+            emergencyServiceModel.setUserCurrentLatitude(userCurrentLatitude);
+            emergencyServiceModel.setUserCurrentLongitude(userCurrentLongitude);
+
+            addEmergencyRequestToDB(emergencyServiceModel);
+        }
+    }
+
+    private void addEmergencyRequestToDB(EmergencyServiceModel emergencyServiceRequest) {
+        emergencyRequestsRef
+                .child(emergencyServiceRequest.getRequestId())
+                .setValue(emergencyServiceRequest)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(getActivity(), "Service request sent", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private String getCurrentDateTime() {
+        // Create a SimpleDateFormat to format the date and time as desired
+        SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy hh:mm a");
+        String formattedDate = dateFormat.format(new Date());
+        return formattedDate;
     }
 }

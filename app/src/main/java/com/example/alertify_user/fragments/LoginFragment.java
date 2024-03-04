@@ -50,6 +50,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
     private UserModel user;
 
+    private Dialog loadingDialog;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -73,7 +75,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.loginBtn:
                 if (isValid()) {
-                    LoadingDialog.showLoadingDialog(getActivity());
+                    loadingDialog = LoadingDialog.showLoadingDialog(getActivity());
                     checkForSignIn(binding.email.getText().toString().trim());
                 }
                 break;
@@ -94,6 +96,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                         count++;
 
                         if (userModel.getEmail().equals(emailText) && userModel.getType().equals("user") && userModel.getUserStatus().equals("unblock")) {
+                            user.setId(userModel.getId());
                             user.setEmail(userModel.getEmail());
                             user.setName(userModel.getName());
                             user.setPhoneNo(userModel.getPhoneNo());
@@ -102,12 +105,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                             signIn();
                             return;
                         } else if (count == snapshot.getChildrenCount()) {
-                            LoadingDialog.hideLoadingDialog();
+                            LoadingDialog.hideLoadingDialog(loadingDialog);
                             Toast.makeText(getActivity(), "Account doesn't exist", Toast.LENGTH_SHORT).show();
                         }
                     }
                 } else {
-                    LoadingDialog.hideLoadingDialog();
+                    LoadingDialog.hideLoadingDialog(loadingDialog);
                     Toast.makeText(getActivity(), "Account doesn't exist", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -127,7 +130,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             getProfileData();
-                            LoadingDialog.hideLoadingDialog();
+                            LoadingDialog.hideLoadingDialog(loadingDialog);
                             Toast.makeText(getContext(), "Logged in Successfully", Toast.LENGTH_SHORT).show();
                             goToMainActivity();
                         }
@@ -135,7 +138,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        LoadingDialog.hideLoadingDialog();
+                        LoadingDialog.hideLoadingDialog(loadingDialog);
                         if (e instanceof FirebaseAuthInvalidCredentialsException) {
                             Toast.makeText(getContext(), "The Password is wrong", Toast.LENGTH_SHORT).show();
                         } else {
@@ -177,6 +180,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         SharedPreferences.Editor editor = userData.edit();
 
         if (user != null) {
+            editor.putString("id", user.getId());
             editor.putString("name", user.getName());
             editor.putString("email", user.getEmail());
             editor.putString("imgUrl", user.getImgUrl());
