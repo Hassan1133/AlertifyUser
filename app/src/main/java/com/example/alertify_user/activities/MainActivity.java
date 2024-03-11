@@ -2,6 +2,7 @@ package com.example.alertify_user.activities;
 
 import static com.example.alertify_user.constants.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -131,14 +132,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     case R.id.logout:
 
-                        SharedPreferences pref = getSharedPreferences("login", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = pref.edit();
-                        editor.putBoolean("flag", false);
-                        editor.apply();
-
-                        intent = new Intent(MainActivity.this, LoginSignupActivity.class);
-                        startActivity(intent);
-                        finish();
+                        logout();
                         break;
                     case R.id.profile:
                         intent = new Intent(MainActivity.this, EditUserProfileActivity.class);
@@ -154,6 +148,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return false;
             }
         });
+    }
+
+    private void logout() {
+
+        FirebaseAuth.getInstance().signOut();
+
+        SharedPreferences userData = getSharedPreferences("userData", Context.MODE_PRIVATE);
+        SharedPreferences.Editor profileDataEditor = userData.edit();
+        profileDataEditor.clear();
+        profileDataEditor.apply();
+
+        SharedPreferences pref = getSharedPreferences("login", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putBoolean("flag", false);
+        editor.apply();
+
+        intent = new Intent(MainActivity.this, LoginSignupActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void bottomNavigationSelection() {
