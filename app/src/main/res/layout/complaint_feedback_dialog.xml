@@ -10,7 +10,7 @@
         android:background="@drawable/dialog_shape">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/crime_location_layout"
+            android:id="@+id/complaintFeedbackLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:boxStrokeColor="@color/hint_color"
             app:endIconDrawable="@drawable/send_feedback"

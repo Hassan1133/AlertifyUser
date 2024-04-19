@@ -1,21 +1,14 @@
 package com.example.alertify_user.fragments;
 
-import static android.app.Activity.RESULT_OK;
+import static com.example.alertify_user.constants.Constants.USERS_REF;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,9 +22,7 @@ import com.example.alertify_user.main_utils.LoadingDialog;
 import com.example.alertify_user.models.UserModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -39,20 +30,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 public class SignupFragment extends Fragment implements View.OnClickListener {
 
     private SignupBinding binding;
-    private Uri imageUri;
 
     private UserModel user;
 
     private FirebaseAuth firebaseAuth;
-
-    private StorageReference firebaseStorageReference;
 
     private DatabaseReference firebaseDatabaseReference;
 
@@ -69,27 +54,18 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
 
     private void init() // method for widgets or variables initialization
     {
-        binding.pickImgIcon.setOnClickListener(this);
-
         binding.signupBtn.setOnClickListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-        firebaseStorageReference = FirebaseStorage.getInstance().getReference();
+        firebaseDatabaseReference = FirebaseDatabase.getInstance().getReference(USERS_REF);
 
-        firebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("AlertifyUser");
     }
 
     @Override
     public void onClick(@NonNull View v) {
-        switch (v.getId()) {
-            case R.id.pickImgIcon:
-                chooseImage();
-                break;
-
-            case R.id.signupBtn:
-                checkUserCnicPhoneExists(binding.cnic.getText().toString().trim(), binding.phone.getText().toString().trim());
-                break;
+        if (v.getId() == R.id.signupBtn) {
+            checkUserCnicPhoneExists(binding.cnic.getText().toString().trim(), binding.phone.getText().toString().trim());
         }
     }
 
@@ -166,7 +142,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 user.setId(firebaseAuth.getUid());
-                                uploadImage(user);
+                                addToDB(user);
                             }
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -179,47 +155,6 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
         }
 
     }
-
-    private void uploadImage(UserModel user) // method for upload image
-    {
-
-        StorageReference strRef = firebaseStorageReference.child("AlertifyUserImages/" + firebaseAuth.getUid());
-
-        strRef
-                .putFile(imageUri)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                        strRef
-                                .getDownloadUrl()
-                                .addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Uri> task) {
-
-                                        user.setImgUrl(task.getResult().toString());
-                                        addToDB(user);
-
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        LoadingDialog.hideLoadingDialog(loadingDialog);
-                                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                        LoadingDialog.hideLoadingDialog(loadingDialog);
-                    }
-                });
-
-    }
-
     private void addToDB(@NonNull UserModel user) // method for add data to the database
     {
         firebaseDatabaseReference
@@ -249,11 +184,6 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
     {
         boolean valid = true;
 
-        if (imageUri == null) {
-            Toast.makeText(getContext(), "select your image", Toast.LENGTH_SHORT).show();
-            valid = false;
-        }
-
         if (binding.name.getText().length() < 3) {
             binding.name.setError("enter valid name");
             valid = false;
@@ -278,20 +208,4 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
         return valid;
     }
 
-    private void chooseImage() // method for get image from gallery
-    {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, 1);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            imageUri = data.getData();
-            binding.userImg.setImageURI(imageUri);
-        }
-    }
 }

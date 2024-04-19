@@ -2,7 +2,6 @@ package com.example.alertify_user.fragments;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -28,7 +27,6 @@ import com.example.alertify_user.R;
 import com.example.alertify_user.activities.MapsActivity;
 import com.example.alertify_user.databinding.PoliceStationBinding;
 import com.example.alertify_user.main_utils.LatLngWrapper;
-import com.example.alertify_user.main_utils.LoadingDialog;
 import com.example.alertify_user.main_utils.LocationPermissionUtils;
 import com.example.alertify_user.models.PoliceStationModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -51,6 +49,8 @@ import com.google.maps.android.PolyUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+;
+
 public class PoliceStationFragment extends Fragment implements OnMapReadyCallback, View.OnClickListener {
 
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -66,11 +66,8 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
 
     private String appropriatePoliceStationLocation;
 
-    private ArrayAdapter arrayAdapter;
-
     private LocationPermissionUtils permissionUtils;
 
-    private Dialog loadingDialog;
 
     @Nullable
     @Override
@@ -88,12 +85,12 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
 
         binding.startDirectionBtn.setOnClickListener(this);
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
         policeStationsRef = FirebaseDatabase.getInstance().getReference("AlertifyPoliceStations");
         policeStations = new ArrayList<>();
 
-        arrayAdapter = new ArrayAdapter(getActivity(), R.layout.drop_down_item, getResources().getStringArray(R.array.location_options));
+        ArrayAdapter arrayAdapter = new ArrayAdapter(requireActivity(), R.layout.drop_down_item, getResources().getStringArray(R.array.location_options));
         // set adapter to the autocomplete tv to the arrayAdapter
         binding.userLocation.setAdapter(arrayAdapter);
 
@@ -131,16 +128,12 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
                     userLatitude = 0;
                     userLongitude = 0;
                     googleMap.clear();
-                    if (permissionUtils.isMapsEnabled()) {
-                        if (permissionUtils.isLocationPermissionGranted()) {
-                            Intent intent = new Intent(getActivity(), MapsActivity.class);
-                            mapsActivityResultLauncher.launch(intent);
-                        } else {
-                            permissionUtils.getLocationPermission();
-                        }
+
+                    Intent intent = new Intent(getActivity(), MapsActivity.class);
+                    mapsActivityResultLauncher.launch(intent);
+
                     }
                 }
-            }
         });
     }
 
@@ -150,7 +143,7 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
     }
 
     private void getLastLocation() {
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             return;
         }
@@ -232,14 +225,12 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.startDirectionBtn:
-                if (userLatitude != 0 && userLongitude != 0 && appropriatePoliceStationLatitude != 0 && appropriatePoliceStationLongitude != 0) {
-                    openGoogleMapsForDirections(userLatitude, userLongitude, appropriatePoliceStationLatitude, appropriatePoliceStationLongitude);
-                } else {
-                    Toast.makeText(getActivity(), "Please select your location", Toast.LENGTH_SHORT).show();
-                }
-                break;
+        if (view.getId() == R.id.startDirectionBtn) {
+            if (userLatitude != 0 && userLongitude != 0 && appropriatePoliceStationLatitude != 0 && appropriatePoliceStationLongitude != 0) {
+                openGoogleMapsForDirections(userLatitude, userLongitude, appropriatePoliceStationLatitude, appropriatePoliceStationLongitude);
+            } else {
+                Toast.makeText(getActivity(), "Please select your location", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -266,6 +257,7 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
         LatLng latLng = new LatLng(lat, lng);
         Marker marker = googleMap.addMarker(new MarkerOptions().position(latLng).title(policeStationName));
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
+        assert marker != null;
         marker.showInfoWindow();
     }
 
@@ -279,4 +271,5 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
             }
         }
     });
+
 }

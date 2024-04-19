@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fillViewport="true"
+    tools:context=".activities.CriminalDetailActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="ScrollViewSize">
+
+        <ImageView
+            android:id="@+id/name_icon"
+            android:layout_width="20sp"
+            android:layout_height="20sp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="52dp"
+            android:src="@drawable/user" />
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="50dp"
+            android:layout_toEndOf="@+id/name_icon"
+            android:text="@string/name"
+            android:textColor="@color/black"
+            android:textSize="17sp" />
+
+
+        <TextView
+            android:id="@+id/criminalName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/name"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            android:layout_toEndOf="@+id/name_icon"
+            android:textColor="#7C7B7B"
+            android:textSize="15sp" />
+
+        <View
+            android:id="@+id/name_underline"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_below="@id/criminalName"
+            android:layout_marginTop="20dp"
+            android:background="#B1B1B1" />
+
+
+        <ImageView
+            android:id="@+id/cnic_icon"
+            android:layout_width="20sp"
+            android:layout_height="20sp"
+            android:layout_below="@+id/name_underline"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="22dp"
+            android:src="@drawable/cnic" />
+
+        <TextView
+            android:id="@+id/cnic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/name_underline"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_toEndOf="@+id/cnic_icon"
+            android:text="@string/cnic"
+            android:textColor="@color/black"
+            android:textSize="17sp" />
+
+
+        <TextView
+            android:id="@+id/criminalCnic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/cnic"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            android:layout_toEndOf="@+id/cnic_icon"
+            android:textColor="#7C7B7B"
+            android:textSize="15sp" />
+
+        <View
+            android:id="@+id/cnic_underline"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_below="@id/criminalCnic"
+            android:layout_marginTop="20dp"
+            android:background="#B1B1B1" />
+
+
+        <ImageView
+            android:id="@+id/report_icon"
+            android:layout_width="18sp"
+            android:layout_height="18sp"
+            android:layout_below="@+id/cnic_underline"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="24dp"
+            android:src="@drawable/report" />
+
+        <TextView
+            android:id="@+id/report"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/cnic_underline"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_toEndOf="@+id/cnic_icon"
+            android:text="@string/fir"
+            android:textColor="@color/black"
+            android:textSize="17sp" />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/report"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            android:layout_toEndOf="@+id/report_icon" />
+
+    </RelativeLayout>
+</ScrollView>

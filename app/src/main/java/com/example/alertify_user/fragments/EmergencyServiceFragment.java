@@ -66,6 +66,8 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
 
     private String appropriatePoliceStationName;
 
+    private SharedPreferences userData;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -82,6 +84,7 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
         depAdmins = new ArrayList<>();
         depAdminRef = FirebaseDatabase.getInstance().getReference("AlertifyDepAdmin");
         emergencyRequestsRef = FirebaseDatabase.getInstance().getReference("AlertifyEmergencyRequests");
+        userData = getContext().getSharedPreferences("userData", MODE_PRIVATE);
     }
 
     @Override
@@ -216,8 +219,8 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
             JSONObject jsonObject = new JSONObject();
 
             JSONObject dataObj = new JSONObject();
-            dataObj.put("title", "hassan");
-            dataObj.put("body", "message");
+            dataObj.put("title", userData.getString("name",""));
+            dataObj.put("body", "needs help right now.");
 
             jsonObject.put("data", dataObj);
             jsonObject.put("to", token);

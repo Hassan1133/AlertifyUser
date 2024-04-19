@@ -32,7 +32,6 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toStartOf="@id/crimeTypeVoiceBtn"
                 android:textColorHint="@color/hint_color"
                 app:boxBackgroundColor="@color/white"
                 app:boxStrokeWidth="0dp"
@@ -52,18 +51,7 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/crimeTypeVoiceBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:src="@drawable/mic"
-                app:backgroundTint="@color/white"
-                android:layout_centerVertical="true"
-                app:borderWidth="0dp"
-                app:elevation="0dp"
-                app:fabSize="mini"
-                app:tint="@color/hint_color" />
+
 
         </RelativeLayout>
 

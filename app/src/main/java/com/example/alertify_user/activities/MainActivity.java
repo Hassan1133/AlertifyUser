@@ -2,9 +2,11 @@ package com.example.alertify_user.activities;
 
 import static com.example.alertify_user.constants.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,19 +14,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
-import com.bumptech.glide.Glide;
 import com.example.alertify_user.R;
 import com.example.alertify_user.fragments.Complaints_Fragment;
 import com.example.alertify_user.fragments.EmergencyServiceFragment;
-import com.example.alertify_user.main_utils.LocationPermissionUtils;
-import com.example.alertify_user.main_utils.StoragePermissionUtils;
 import com.example.alertify_user.fragments.PoliceStationFragment;
 import com.example.alertify_user.fragments.Records_Fragment;
+import com.example.alertify_user.main_utils.LocationPermissionUtils;
+import com.example.alertify_user.main_utils.StoragePermissionUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
@@ -35,8 +37,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private View headerView;
@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private DrawerLayout drawer;
     private NavigationView navigationView;
     private FirebaseAuth firebaseAuth;
-    private CircleImageView userImage;
     private TextView userName, userEmail;
     private BottomNavigationView bottom_navigation;
 
@@ -56,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private StoragePermissionUtils storagePermissionUtils;
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     private void initialize() {
         toolBarBtn = findViewById(R.id.tool_bar_menu);
         toolBarBtn.setOnClickListener(this);
@@ -76,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         drawer = findViewById(R.id.drawer);
         navigationView = findViewById(R.id.navigation);
         headerView = navigationView.getHeaderView(0);
-        userImage = headerView.findViewById(R.id.circle_img);
         userName = headerView.findViewById(R.id.user_name);
         userEmail = headerView.findViewById(R.id.user_email);
 
@@ -99,10 +99,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.tool_bar_menu:
-                startDrawer(); // start drawer method for open or close navigation drawer
-                break;
+        if (v.getId() == R.id.tool_bar_menu) {
+            startDrawer(); // start drawer method for open or close navigation drawer
         }
     }
 
@@ -112,7 +110,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         userEmail.setText(userData.getString("email", ""));
 
-        Glide.with(getApplicationContext()).load(userData.getString("imgUrl", "")).into(userImage);
     }
 
     private void startDrawer() {
@@ -125,13 +122,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void navigationSelection() {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
                 switch (item.getItemId()) {
 
                     case R.id.logout:
-
                         logout();
                         break;
                     case R.id.profile:
@@ -161,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         SharedPreferences pref = getSharedPreferences("login", MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putBoolean("flag", false);
+        editor.clear();
         editor.apply();
 
         intent = new Intent(MainActivity.this, LoginSignupActivity.class);
@@ -172,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void bottomNavigationSelection() {
 
         bottom_navigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {

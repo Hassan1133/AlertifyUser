@@ -7,7 +7,7 @@
     android:background="@color/white">
 
     <androidx.appcompat.widget.SearchView
-        android:id="@+id/search_view"
+        android:id="@+id/searchView"
         android:layout_width="match_parent"
         android:layout_height="35dp"
         android:layout_marginStart="15dp"
@@ -25,9 +25,9 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/complaintsRecycler"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/search_view" />
+        android:layout_below="@+id/searchView" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addComplaintBtn"

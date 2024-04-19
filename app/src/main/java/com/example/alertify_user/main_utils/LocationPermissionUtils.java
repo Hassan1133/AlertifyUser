@@ -22,7 +22,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 public class LocationPermissionUtils {
-    private Activity activity;
+    private final Activity activity;
 
     public boolean locationPermission = false;
 
@@ -84,26 +84,6 @@ public class LocationPermissionUtils {
         }
         return false;
     }
-//
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-//        switch (requestCode) {
-//            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                    locationPermission = true;
-//                }
-//            }
-//        }
-//    }
-//
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        switch (requestCode) {
-//            case PERMISSIONS_REQUEST_ENABLE_GPS: {
-//                if (!locationPermission) {
-//                    getLocationPermission();
-//                }
-//            }
-//        }
-//    }
 
     public boolean isLocationPermissionGranted() {
         return locationPermission;

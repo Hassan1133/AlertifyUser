@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:fillViewport="true"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#3490DC">
+        android:background="#3490DC"
+        tools:ignore="ScrollViewSize">
 
 
         <TextView
@@ -18,26 +22,16 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="40dp"
             android:fontFamily="@font/noto_serif_bold"
-            android:text="ALERTIFY"
+            android:text="@string/alertify"
             android:textColor="@color/white"
             android:textSize="30sp" />
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/userImage"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_below="@+id/txt_alertify"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/dp"
-            android:translationZ="999dp" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/userImage"
-            android:layout_marginTop="-55dp"
+            android:layout_below="@+id/txt_alertify"
+            android:layout_marginTop="55dp"
             android:background="@drawable/login_signup_shape"
             android:backgroundTint="@color/white"
             android:paddingBottom="20dp">
@@ -48,7 +42,7 @@
                 android:layout_width="20sp"
                 android:layout_height="20sp"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="51dp"
                 android:src="@drawable/user" />
 
             <TextView
@@ -56,9 +50,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="50dp"
                 android:layout_toEndOf="@+id/name_icon"
-                android:text="Name"
+                android:text="@string/name"
                 android:textColor="@color/black"
                 android:textSize="17sp" />
 
@@ -101,7 +95,7 @@
                 android:layout_height="20sp"
                 android:layout_below="@+id/name_underline"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="21dp"
                 android:src="@drawable/cnic" />
 
             <TextView
@@ -112,7 +106,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_toEndOf="@+id/cnic_icon"
-                android:text="CNIC No"
+                android:text="@string/cnic_no"
                 android:textColor="@color/black"
                 android:textSize="17sp" />
 
@@ -144,7 +138,7 @@
                 android:layout_height="20sp"
                 android:layout_below="@+id/cnic_underline"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="21dp"
                 android:src="@drawable/phone" />
 
             <TextView
@@ -155,7 +149,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_toEndOf="@+id/phone_icon"
-                android:text="Phone No"
+                android:text="@string/phone_no"
                 android:textColor="@color/black"
                 android:textSize="17sp" />
 
@@ -187,7 +181,7 @@
                 android:layout_height="20sp"
                 android:layout_below="@+id/phone_underline"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="21dp"
                 android:src="@drawable/mail" />
 
             <TextView
@@ -198,7 +192,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_toEndOf="@+id/email_icon"
-                android:text="Email"
+                android:text="@string/email"
                 android:textColor="@color/black"
                 android:textSize="17sp" />
 
@@ -212,7 +206,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="40dp"
                 android:layout_toEndOf="@+id/email_icon"
-                android:hint="loading email...."
+                android:hint="@string/loading_email"
                 android:textColor="@color/hint_color"
                 android:textSize="15sp" />
 
@@ -231,7 +225,7 @@
                 android:layout_height="20sp"
                 android:layout_below="@+id/email_underline"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="21dp"
                 android:src="@drawable/key" />
 
             <TextView
@@ -242,7 +236,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_toEndOf="@+id/password_icon"
-                android:text="Password"
+                android:text="@string/password"
                 android:textColor="@color/black"
                 android:textSize="17sp" />
 

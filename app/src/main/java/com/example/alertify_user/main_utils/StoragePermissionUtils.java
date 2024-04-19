@@ -1,15 +1,11 @@
 package com.example.alertify_user.main_utils;
 
-import static com.example.alertify_user.constants.Constants.PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE;
-
 import android.Manifest;
 import android.app.Activity;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.widget.Toast;
 
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+import androidx.annotation.RequiresApi;
 
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
@@ -21,12 +17,13 @@ import java.util.List;
 
 public class StoragePermissionUtils {
 
-    private Activity activity;
+    private final Activity activity;
 
     public StoragePermissionUtils(Activity activity) {
         this.activity = activity;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public void checkStoragePermission() {
         Dexter.withContext(activity.getApplicationContext())
                 .withPermissions(

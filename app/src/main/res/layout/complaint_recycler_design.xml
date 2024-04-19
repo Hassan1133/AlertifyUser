@@ -5,11 +5,10 @@
     android:layout_height="wrap_content"
     android:layout_marginStart="5dp"
     android:layout_marginEnd="5dp"
-    android:clickable="true"
     android:elevation="4dp"
-    android:foreground="?android:attr/selectableItemBackground"
     app:cardCornerRadius="20dp"
-    app:cardUseCompatPadding="true">
+    app:cardUseCompatPadding="true"
+    android:focusable="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,18 +20,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginTop="20dp"
             android:text="24 Aug 2023"
             android:textColor="@color/hint_color"
             android:textSize="13sp" />
 
-        <ImageView
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/detail_btn"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="17dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            app:elevation="0dp"
+            app:fabCustomSize="22dp"
+            app:borderWidth="0dp"
+            android:backgroundTint="@color/white"
+            app:tint="@color/app_color"
             android:src="@drawable/report_details" />
 
         <TextView
@@ -71,7 +75,7 @@
             android:layout_marginEnd="20dp"
             android:textColor="@color/white"
             android:text="status"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/investigation_status_bg"
             android:padding="5dp"

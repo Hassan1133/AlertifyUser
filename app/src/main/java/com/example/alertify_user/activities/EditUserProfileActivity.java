@@ -1,51 +1,39 @@
 package com.example.alertify_user.activities;
 
+import static com.example.alertify_user.constants.Constants.USERS_REF;
+
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
 import com.example.alertify_user.R;
 import com.example.alertify_user.databinding.ActivityEditUserProfileBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 
 public class EditUserProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private ShapeableImageView userDialogImg;
+    private Dialog userUpdateNameDialog, userUpdatePasswordDialog;
 
-    private Uri imageUri;
-
-    private StorageReference firebaseStorageReference;
-
-    private Dialog userUpdateImgDialog, userUpdateNameDialog, userUpdatePasswordDialog;
-
-    private ProgressBar userImgUpdateDialogProgressBar, userNameUpdateDialogProgressBar, userPasswordUpdateDialogProgressBar;
+    private ProgressBar userNameUpdateDialogProgressBar, userPasswordUpdateDialogProgressBar;
 
     private DatabaseReference userRef;
 
@@ -73,33 +61,27 @@ public class EditUserProfileActivity extends AppCompatActivity implements View.O
         userData = getSharedPreferences("userData", MODE_PRIVATE);
         editor = userData.edit();
 
-        binding.userImage.setOnClickListener(this);
-
         binding.nameEditBtn.setOnClickListener(this);
         binding.passwordEditBtn.setOnClickListener(this);
 
-
-        firebaseStorageReference = FirebaseStorage.getInstance().getReference();
-
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        userRef = FirebaseDatabase.getInstance().getReference(USERS_REF);
 
         getProfileData(); // set method for load user data to the profile
     }
 
     private void getProfileData() {
-        Glide.with(getApplicationContext()).load(userData.getString("imgUrl", "")).into(binding.userImage);
         binding.userName.setText(userData.getString("name", ""));
         binding.userEmail.setText(userData.getString("email", ""));
         binding.userCnic.setText(userData.getString("cnicNo", ""));
         binding.userPhone.setText(userData.getString("phoneNo", ""));
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.userImage:
-                createUserImageDialog();
-                break;
             case R.id.nameEditBtn:
                 createUserNameDialog();
                 break;
@@ -108,115 +90,6 @@ public class EditUserProfileActivity extends AppCompatActivity implements View.O
                 break;
         }
     }
-
-    private void createUserImageDialog() {
-        userUpdateImgDialog = new Dialog(EditUserProfileActivity.this);
-        userUpdateImgDialog.setContentView(R.layout.user_edit_img_dialog);
-        userUpdateImgDialog.show();
-        userUpdateImgDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-        userImgUpdateDialogProgressBar = userUpdateImgDialog.findViewById(R.id.user_img_progressbar);
-
-        userDialogImg = userUpdateImgDialog.findViewById(R.id.user_dialog_image);
-        Glide.with(getApplicationContext()).load(userData.getString("imgUrl", "")).into(userDialogImg);
-
-        userDialogImg.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-                pickNewImage();
-            }
-        });
-
-        userUpdateImgDialog.findViewById(R.id.dep_admin_img_close_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                userUpdateImgDialog.dismiss();
-            }
-        });
-
-        userUpdateImgDialog.findViewById(R.id.user_img_update_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                userImgUpdateDialogProgressBar.setVisibility(View.VISIBLE);
-                if (imageUri == null) {
-                    updateImageUrlToDb(userData.getString("imgUrl", ""));
-                } else if (imageUri != null) {
-                    uploadImage();
-                }
-            }
-        });
-
-    }
-
-    private void uploadImage() {
-        StorageReference strRef = firebaseStorageReference.child("AlertifyUserImages/" + firebaseUser.getUid());
-
-        strRef.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                strRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        updateImageUrlToDb(task.getResult().toString());
-                    }
-
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                        Toast.makeText(EditUserProfileActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(EditUserProfileActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void updateImageUrlToDb(String imageUrl) {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("imgUrl", imageUrl);
-
-        userRef.child(firebaseUser.getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    userImgUpdateDialogProgressBar.setVisibility(View.INVISIBLE);
-                    Toast.makeText(EditUserProfileActivity.this, "User Image Updated Successfully!", Toast.LENGTH_SHORT).show();
-                    userUpdateImgDialog.dismiss();
-
-                    editor.putString("imgUrl", imageUrl);
-                    editor.apply();
-                    Glide.with(getApplicationContext()).load(userData.getString("imgUrl", "")).into(binding.userImage);
-
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(EditUserProfileActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void pickNewImage() {
-        getContent.launch("image/*");
-    }
-
-    ActivityResultLauncher<String> getContent = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
-        @Override
-        public void onActivityResult(Uri result) {
-            if (result != null) {
-                imageUri = result;
-                userDialogImg.setImageURI(imageUri);
-            }
-        }
-    });
 
     private void createUserNameDialog() {
         userUpdateNameDialog = new Dialog(EditUserProfileActivity.this);
@@ -260,7 +133,7 @@ public class EditUserProfileActivity extends AppCompatActivity implements View.O
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     userNameUpdateDialogProgressBar.setVisibility(View.INVISIBLE);
-                    Toast.makeText(EditUserProfileActivity.this, "Department Admin Name Updated Successfully!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditUserProfileActivity.this, "User Name Updated Successfully!", Toast.LENGTH_SHORT).show();
                     userUpdateNameDialog.dismiss();
                     binding.userName.setText(updatedName);
                     editor.putString("name", updatedName);

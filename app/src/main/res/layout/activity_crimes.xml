@@ -7,23 +7,33 @@
     tools:context=".activities.CrimesActivity">
 
     <androidx.appcompat.widget.SearchView
-        android:id="@+id/crimeSearchView"
+        android:id="@+id/crimesSearchView"
         android:layout_width="match_parent"
         android:layout_height="35dp"
         android:layout_margin="15dp"
         android:background="@drawable/fragment_search_view_bg"
         android:elevation="3dp"
-        android:theme="@style/search_view_style"
-        app:iconifiedByDefault="false"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
+        android:theme="@style/search_view_style"
+        app:iconifiedByDefault="false"
         app:queryBackground="@color/transparent"
         app:queryHint="@string/search" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/crimes_recycler"
+        android:id="@+id/crimesRecycler"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/crimeSearchView" />
+        android:layout_below="@+id/crimesSearchView" />
+
+    <ProgressBar
+        android:id="@+id/crimesProgressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:indeterminateTint="@color/app_color"
+        android:visibility="gone" />
+
 
 </RelativeLayout>

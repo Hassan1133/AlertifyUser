@@ -6,7 +6,6 @@ public class UserModel {
     private String phoneNo;
     private String cnicNo;
     private String email;
-    private String imgUrl;
     private String userStatus;
     private String type;
 
@@ -65,13 +64,5 @@ public class UserModel {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getImgUrl() {
-        return imgUrl;
-    }
-
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
     }
 }

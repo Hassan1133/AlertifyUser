@@ -2,14 +2,18 @@
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:background="@color/white">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:paddingBottom="20dp"
+        tools:ignore="ScrollViewSize">
 
         <TextView
             android:id="@+id/feedBack"
@@ -19,7 +23,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginEnd="20dp"
             android:layout_marginTop="23dp"
-            android:text="Feedback"
+            android:text="@string/feedback"
             android:textColor="@color/app_color"
             />
 
@@ -29,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            android:text="Evidence"
+            android:text="@string/evidence"
             android:textColor="@color/black"
             android:textSize="17sp" />
 
@@ -63,7 +67,7 @@
             android:layout_below="@id/crime_evidence_underline"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            android:text="Crime Type"
+            android:text="@string/crime_type"
             android:textColor="@color/black"
             android:textSize="17sp" />
 
@@ -92,7 +96,7 @@
             android:layout_below="@+id/crime_type_underline"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            android:text="Crime Details"
+            android:text="@string/crime_details"
             android:textColor="@color/black"
             android:textSize="17sp" />
 
@@ -121,7 +125,7 @@
             android:layout_below="@+id/crime_details_underline"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            android:text="Crime Location"
+            android:text="@string/crime_location"
             android:textColor="@color/black"
             android:textSize="17sp" />
 
@@ -207,7 +211,7 @@
             android:layout_below="@+id/crime_time_underline"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            android:text="Complaint Police Station"
+            android:text="@string/complaint_police_station"
             android:textColor="@color/black"
             android:textSize="17sp" />
 
@@ -237,7 +241,7 @@
             android:layout_below="@+id/complaint_police_station_underline"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            android:text="Complaint DateTime"
+            android:text="@string/complaint_datetime"
             android:textColor="@color/black"
             android:textSize="17sp" />
 

@@ -1,8 +1,11 @@
 package com.example.alertify_user.fragments;
 
+import static com.example.alertify_user.constants.Constants.ALERTIFY_CRIMES_REF;
+import static com.example.alertify_user.constants.Constants.ALERTIFY_POLICE_STATIONS_REF;
 import static com.example.alertify_user.constants.Constants.EVIDENCE_FILE_SIZE_LIMIT;
-import static com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_KEYBOARD;
+import static com.example.alertify_user.constants.Constants.USERS_COMPLAINTS_REF;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -13,7 +16,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.speech.RecognizerIntent;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +32,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.alertify_user.R;
+import com.example.alertify_user.activities.MapsActivity;
 import com.example.alertify_user.adapters.ComplaintsAdapter;
 import com.example.alertify_user.adapters.DropDownAdapter;
 import com.example.alertify_user.databinding.ComplaintDialogBinding;
@@ -40,7 +43,6 @@ import com.example.alertify_user.main_utils.LanguageTranslator;
 import com.example.alertify_user.main_utils.LatLngWrapper;
 import com.example.alertify_user.main_utils.LoadingDialog;
 import com.example.alertify_user.main_utils.LocationPermissionUtils;
-import com.example.alertify_user.activities.MapsActivity;
 import com.example.alertify_user.main_utils.NetworkUtils;
 import com.example.alertify_user.models.ComplaintModel;
 import com.example.alertify_user.models.CrimesModel;
@@ -80,7 +82,6 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
     private ComplaintDialogBinding complaintDialogBinding;
     private Dialog complaintDialog;
     private String appropriatePoliceStationName;
-    private DropDownAdapter dropDownAdapter;
     private DatabaseReference crimesRef;
     private ArrayList<String> crimesList;
     private double selectedCrimeLatitude, selectedCrimeLongitude;
@@ -108,15 +109,15 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
     private void init() {
         binding.addComplaintBtn.setOnClickListener(this);
 
-        crimesRef = FirebaseDatabase.getInstance().getReference("AlertifyCrimes");
+        crimesRef = FirebaseDatabase.getInstance().getReference(ALERTIFY_CRIMES_REF);
         crimesList = new ArrayList<>();
 
-        policeStationsRef = FirebaseDatabase.getInstance().getReference("AlertifyPoliceStations");
+        policeStationsRef = FirebaseDatabase.getInstance().getReference(ALERTIFY_POLICE_STATIONS_REF);
         policeStations = new ArrayList<>();
 
         permissionUtils = new LocationPermissionUtils(getActivity());
 
-        complaintsRef = FirebaseDatabase.getInstance().getReference("AlertifyUserComplaints"); // firebase initialization
+        complaintsRef = FirebaseDatabase.getInstance().getReference(USERS_COMPLAINTS_REF); // firebase initialization
 
         firebaseStorageReference = FirebaseStorage.getInstance().getReference();
 
@@ -127,34 +128,30 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
         fetchComplaintsData();
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.addComplaintBtn:
-                if (NetworkUtils.isInternetAvailable(getActivity())) {
-                    // Internet is available, call the method for creating dialog
-                    createComplaintDialog();
+        if (v.getId() == R.id.addComplaintBtn) {
+            if (NetworkUtils.isInternetAvailable(requireActivity())) {
+                // Internet is available, call the method for creating dialog
+                createComplaintDialog();
 
-                } else {
-                    // Internet is not available, show a message to the user
-                    Toast.makeText(getActivity(), "Please turn on your internet.", Toast.LENGTH_SHORT).show();
-                }
-                break;
+            } else {
+                // Internet is not available, show a message to the user
+                Toast.makeText(getActivity(), "Please turn on your internet", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
     private void createComplaintDialog() {
         complaintDialogBinding = ComplaintDialogBinding.inflate(LayoutInflater.from(getActivity()));
-        complaintDialog = new Dialog(getActivity());
+        complaintDialog = new Dialog(requireActivity());
         complaintDialog.setContentView(complaintDialogBinding.getRoot());
         complaintDialog.setCancelable(false);
         complaintDialog.show();
         complaintDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         fetchCrimeTypeForDropDown();
-
-        dropDownAdapter = new DropDownAdapter(getActivity(), crimesList);
-        complaintDialogBinding.crimeType.setAdapter(dropDownAdapter);
 
         complaintDialogBinding.crimeLocationLayout.setEndIconOnClickListener(new View.OnClickListener() {
             @Override
@@ -170,31 +167,6 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
                 }
             }
 
-        });
-
-        complaintDialogBinding.crimeTypeVoiceBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startVoiceRecognition(new RecognitionCallback() {
-                    @Override
-                    public void onRecognitionComplete(String result) {
-                        if (!TextUtils.isEmpty(result)) {
-                            if (crimesList.contains(result)) {
-                                complaintDialogBinding.crimeType.setText(result);
-                            } else {
-                                Toast.makeText(getActivity(), result + " does not exist in the list", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(getActivity(), "Voice recognition failed", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onRecognitionFailure(String errorMessage) {
-                        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
         });
 
         complaintDialogBinding.crimeDateLayout.setEndIconOnClickListener(new View.OnClickListener() {
@@ -306,7 +278,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
             @Override
             public void onClick(View v) {
                 if (isDataValid()) {
-                    LoadingDialog.showLoadingDialog(getActivity());
+                    loadingDialog = LoadingDialog.showLoadingDialog(getActivity());
                     getPoliceStationsData();
                 }
             }
@@ -461,16 +433,15 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
         complaintModel.setCrimeLocation(complaintDialogBinding.crimeLocation.getText().toString());
         complaintModel.setPoliceStation(appropriatePoliceStationName);
         complaintModel.setUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        complaintModel.setInvestigationStatus("Reported");
+        complaintModel.setInvestigationStatus("Pending");
         complaintModel.setFeedback("none");
         uploadEvidence(complaintModel);
     }
 
     private String getCurrentDateTime() {
         // Create a SimpleDateFormat to format the date and time as desired
-        SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy hh:mm a");
-        String formattedDate = dateFormat.format(new Date());
-        return formattedDate;
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy hh:mm a");
+        return dateFormat.format(new Date());
     }
 
     private void uploadEvidence(ComplaintModel complaintModel) {
@@ -573,6 +544,8 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
 
                     crimesList.add(crimesModel.getCrimeType());
                 }
+
+                setCrimeTypesToRecycler(crimesList);
             }
 
             @Override
@@ -582,6 +555,9 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
         });
     }
 
+    private void setCrimeTypesToRecycler(ArrayList<String> list) {
+        complaintDialogBinding.crimeType.setAdapter(new DropDownAdapter(getActivity(), list));
+    }
     private final ActivityResultLauncher<Intent> mapsActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {

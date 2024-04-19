@@ -2,6 +2,8 @@ package com.example.alertify_user.fragments;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static com.example.alertify_user.constants.Constants.USERS_REF;
+
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -65,7 +67,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-        userRef = FirebaseDatabase.getInstance().getReference("AlertifyUser");
+        userRef = FirebaseDatabase.getInstance().getReference(USERS_REF);
 
         user = new UserModel();
     }
@@ -101,7 +103,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                             user.setName(userModel.getName());
                             user.setPhoneNo(userModel.getPhoneNo());
                             user.setCnicNo(userModel.getCnicNo());
-                            user.setImgUrl(userModel.getImgUrl());
                             signIn();
                             return;
                         } else if (count == snapshot.getChildrenCount()) {
@@ -183,7 +184,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
             editor.putString("id", user.getId());
             editor.putString("name", user.getName());
             editor.putString("email", user.getEmail());
-            editor.putString("imgUrl", user.getImgUrl());
             editor.putString("phoneNo", user.getPhoneNo());
             editor.putString("cnicNo", user.getCnicNo());
             editor.apply();
