@@ -56,8 +56,7 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
     private FusedLocationProviderClient fusedLocationProviderClient;
     private SupportMapFragment mapFragment;
     private PoliceStationBinding binding;
-    private double userLatitude;
-    private double userLongitude;
+    private double userLatitude, userLongitude, userCurrentLatitudeForDirections, userCurrentLongitudeForDirections;
     private double appropriatePoliceStationLatitude;
     private double appropriatePoliceStationLongitude;
     private GoogleMap googleMap;
@@ -158,6 +157,26 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
         });
     }
 
+    private void getCurrentLocationForDirectionsAgain(double policeStationLatitude, double policeStationLongitude) {
+        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            return;
+        }
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+
+                userCurrentLatitudeForDirections = location.getLatitude();
+                userCurrentLongitudeForDirections = location.getLongitude();
+                if (userCurrentLatitudeForDirections != 0 && userCurrentLongitudeForDirections != 0) {
+                    openGoogleMapsForDirections(userCurrentLatitudeForDirections, userCurrentLongitudeForDirections, appropriatePoliceStationLatitude, appropriatePoliceStationLongitude);
+                } else {
+                    Toast.makeText(getActivity(), "Please select your location again", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
     private void getPoliceStationsData() {
         policeStationsRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -227,7 +246,7 @@ public class PoliceStationFragment extends Fragment implements OnMapReadyCallbac
     public void onClick(View view) {
         if (view.getId() == R.id.startDirectionBtn) {
             if (userLatitude != 0 && userLongitude != 0 && appropriatePoliceStationLatitude != 0 && appropriatePoliceStationLongitude != 0) {
-                openGoogleMapsForDirections(userLatitude, userLongitude, appropriatePoliceStationLatitude, appropriatePoliceStationLongitude);
+                getCurrentLocationForDirectionsAgain(appropriatePoliceStationLatitude, appropriatePoliceStationLongitude);
             } else {
                 Toast.makeText(getActivity(), "Please select your location", Toast.LENGTH_SHORT).show();
             }
