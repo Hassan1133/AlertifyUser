@@ -63,4 +63,6 @@
     <string name="crime_location">Crime Location</string>
     <string name="complaint_police_station">Complaint Police Station</string>
     <string name="complaint_datetime">Complaint DateTime</string>
+    <string name="crime_datetime">Crime DateTime</string>
+    <string name="investigation_status">Investigation Status</string>
 </resources>

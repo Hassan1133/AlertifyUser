@@ -1,5 +1,7 @@
 package com.example.alertify_user.models;
 
+import java.util.List;
+
 public class UserModel {
     private String id;
     private String name;
@@ -8,6 +10,16 @@ public class UserModel {
     private String email;
     private String userStatus;
     private String type;
+
+    private List<String> complaintList;
+
+    public List<String> getComplaintList() {
+        return complaintList;
+    }
+
+    public void setComplaintList(List<String> complaintList) {
+        this.complaintList = complaintList;
+    }
 
     public String getUserStatus() {
         return userStatus;

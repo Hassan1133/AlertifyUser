@@ -53,20 +53,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private LocationPermissionUtils locationPermissionUtils;
 
-    private StoragePermissionUtils storagePermissionUtils;
-
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer_layout);
-
         initialize(); // initialization method for initializing variables
-        navigationSelection(); // selection method for navigation items
-        bottomNavigationSelection();
-        checkDepAdminBlockOrNot();
-        loadFragment(new Complaints_Fragment());
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
@@ -92,9 +84,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         locationPermissionUtils.checkAndRequestPermissions();
         locationPermissionUtils.getLocationPermission();
 
-        storagePermissionUtils = new StoragePermissionUtils(this);
+        StoragePermissionUtils storagePermissionUtils = new StoragePermissionUtils(this);
         storagePermissionUtils.checkStoragePermission();
 
+        navigationSelection(); // selection method for navigation items
+        bottomNavigationSelection();
+        checkDepAdminBlockOrNot();
+        bottom_navigation.setSelectedItemId(R.id.complaints);
     }
 
     @Override

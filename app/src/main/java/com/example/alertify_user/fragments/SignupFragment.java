@@ -31,6 +31,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SignupFragment extends Fragment implements View.OnClickListener {
 
     private SignupBinding binding;
@@ -70,7 +73,6 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
     }
 
     private void checkUserCnicPhoneExists(String cnicNo, String phoneNo) {
-
 
         firebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             int count = 0;
@@ -127,11 +129,14 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
 
             loadingDialog = LoadingDialog.showLoadingDialog(getActivity());
 
+            List<String> complaintList = new ArrayList<>();
+
             user = new UserModel();
             user.setName(binding.name.getText().toString().trim());
             user.setPhoneNo(binding.phone.getText().toString().trim());
             user.setCnicNo(binding.cnic.getText().toString().trim());
             user.setEmail(binding.email.getText().toString().trim());
+            user.setComplaintList(complaintList);
             user.setType("user");
             user.setUserStatus("unblock");
 

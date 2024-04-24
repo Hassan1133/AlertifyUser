@@ -1,14 +1,18 @@
 package com.example.alertify_user.fragments;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.example.alertify_user.constants.Constants.ALERTIFY_CRIMES_REF;
+import static com.example.alertify_user.constants.Constants.ALERTIFY_DEP_ADMIN_REF;
 import static com.example.alertify_user.constants.Constants.ALERTIFY_POLICE_STATIONS_REF;
 import static com.example.alertify_user.constants.Constants.EVIDENCE_FILE_SIZE_LIMIT;
 import static com.example.alertify_user.constants.Constants.USERS_COMPLAINTS_REF;
+import static com.example.alertify_user.constants.Constants.USERS_REF;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -67,6 +71,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.maps.android.PolyUtil;
 
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -76,33 +83,42 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class Complaints_Fragment extends Fragment implements View.OnClickListener {
 
     private ComplaintsFragmentBinding binding;
     private ComplaintDialogBinding complaintDialogBinding;
     private Dialog complaintDialog;
     private String appropriatePoliceStationName;
-    private DatabaseReference crimesRef;
     private ArrayList<String> crimesList;
     private double selectedCrimeLatitude, selectedCrimeLongitude;
-    private DatabaseReference policeStationsRef;
     private ArrayList<PoliceStationModel> policeStations;
     private ComplaintModel complaintModel;
     private LocationPermissionUtils permissionUtils;
     private StorageReference firebaseStorageReference;
-    private DatabaseReference complaintsRef;
+    private DatabaseReference complaintsRef, policeStationsRef, crimesRef, userRef, depAdminRef;
     private List<ComplaintModel> complaints;
     private ComplaintsAdapter complaintsAdapter;
     private Uri evidenceUri;
     private RecognitionCallback recognitionCallback;
-
     private Dialog loadingDialog;
+
+    private SharedPreferences userData;
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         binding = ComplaintsFragmentBinding.inflate(inflater, container, false);
         init();
+        Log.d("TAGCheck", "onCreateView: run");
         return binding.getRoot();
     }
 
@@ -125,7 +141,10 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
 
         binding.complaintsRecycler.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
-        fetchComplaintsData();
+        userRef = FirebaseDatabase.getInstance().getReference(USERS_REF);
+        depAdminRef = FirebaseDatabase.getInstance().getReference(ALERTIFY_DEP_ADMIN_REF);
+
+        userData = getContext().getSharedPreferences("userData", MODE_PRIVATE);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -143,6 +162,38 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
         }
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (!isAdded()) {
+            return;
+        }
+
+        fetchComplaintsData();
+        binding.searchView.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                search(newText);
+                return true;
+            }
+        });
+    }
+
+    private void search(String newText) {
+        ArrayList<ComplaintModel> searchList = new ArrayList<>();
+        for (ComplaintModel i : complaints) {
+            if (i.getCrimeType().toLowerCase().contains(newText.toLowerCase()) || i.getComplaintDateTime().toLowerCase().contains(newText.toLowerCase()) || i.getCrimeDate().toLowerCase().contains(newText.toLowerCase()) || i.getCrimeTime().toLowerCase().contains(newText.toLowerCase()) || i.getPoliceStation().toLowerCase().contains(newText.toLowerCase()) || i.getCrimeLocation().toLowerCase().contains(newText.toLowerCase()) || i.getInvestigationStatus().toLowerCase().contains(newText.toLowerCase())) {
+                searchList.add(i);
+            }
+        }
+        setDataToRecycler(searchList);
+    }
     private void createComplaintDialog() {
         complaintDialogBinding = ComplaintDialogBinding.inflate(LayoutInflater.from(getActivity()));
         complaintDialog = new Dialog(requireActivity());
@@ -391,7 +442,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
 
                 if (isLocationInsidePoliceStationArea(new LatLng(selectedCrimeLatitude, selectedCrimeLongitude), latLngPoints)) {
                     appropriatePoliceStationName = policeStation.getPoliceStationName();
-                    addDataToModel();
+                    addDataToModel(policeStation.getDepAdminId());
                     break;
                 }
             }
@@ -421,7 +472,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
         return latLngList;
     }
 
-    private void addDataToModel() {
+    private void addDataToModel(String depAdminId) {
         complaintModel = new ComplaintModel();
         complaintModel.setCrimeType(complaintDialogBinding.crimeType.getText().toString());
         complaintModel.setCrimeDetails(complaintDialogBinding.crimeDetails.getText().toString().trim());
@@ -435,7 +486,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
         complaintModel.setUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
         complaintModel.setInvestigationStatus("Pending");
         complaintModel.setFeedback("none");
-        uploadEvidence(complaintModel);
+        uploadEvidence(complaintModel, depAdminId);
     }
 
     private String getCurrentDateTime() {
@@ -444,7 +495,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
         return dateFormat.format(new Date());
     }
 
-    private void uploadEvidence(ComplaintModel complaintModel) {
+    private void uploadEvidence(ComplaintModel complaintModel, String depAdminId) {
         complaintModel.setComplaintId(complaintsRef.push().getKey());
 
         if (evidenceUri != null) {
@@ -457,7 +508,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
                         public void onComplete(@NonNull Task<Uri> task) {
                             complaintModel.setEvidenceUrl(task.getResult().toString());
                             complaintModel.setEvidenceType(taskSnapshot.getMetadata().getContentType());
-                            addToDb(complaintModel);
+                            addToDb(complaintModel, depAdminId);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -477,18 +528,16 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
         } else {
             complaintModel.setEvidenceUrl("");
             complaintModel.setEvidenceType("");
-            addToDb(complaintModel);
+            addToDb(complaintModel, depAdminId);
         }
     }
 
-    private void addToDb(ComplaintModel complaintModel) {
+    private void addToDb(ComplaintModel complaintModel, String depAdminId) {
         complaintsRef.child(complaintModel.getComplaintId()).setValue(complaintModel).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    LoadingDialog.hideLoadingDialog(loadingDialog);
-                    Toast.makeText(getActivity(), "Complaint Reported successfully!", Toast.LENGTH_SHORT).show();
-                    complaintDialog.dismiss();
+                    updateUserComplaintList(complaintModel.getComplaintId(), complaintModel.getUserId(), depAdminId);
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -496,6 +545,141 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 LoadingDialog.hideLoadingDialog(loadingDialog);
+            }
+        });
+    }
+
+    private void updateUserComplaintList(String complaintId, String userId, String depAdminId) {
+        userRef.child(userId).child("complaintList").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<String> complaintList = new ArrayList<>();
+                for (DataSnapshot snapshotData : dataSnapshot.getChildren()) {
+                    complaintList.add(snapshotData.getValue(String.class));
+                }
+                // Check if the new policeStationId already exists in the list
+                if (!complaintList.contains(complaintId)) {
+                    Toast.makeText(getActivity(), "e.getMessage()", Toast.LENGTH_SHORT).show();
+                    // If it doesn't exist, add it to the list
+                    complaintList.add(complaintId);
+
+                    // Update the value of policeStationList in the database
+                    userRef.child(userId).child("complaintList").setValue(complaintList).addOnSuccessListener(aVoid -> {
+                        updateDepAdminList(complaintId, depAdminId);
+                    }).addOnFailureListener(e -> {
+                        // Handle failure
+                        Toast.makeText(requireActivity(), "Failed to add Complaint to UserRef: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                } else {
+                    LoadingDialog.hideLoadingDialog(loadingDialog);
+                    Toast.makeText(getActivity(), "Complaint Reported successfully!", Toast.LENGTH_SHORT).show();
+                    complaintDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle onCancelled event
+                LoadingDialog.hideLoadingDialog(loadingDialog);
+                Toast.makeText(requireActivity(), "Failed to retrieve user complaint list: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updateDepAdminList(String complaintId, String depAdminId) {
+        depAdminRef.child(depAdminId).child("complaintList").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<String> complaintList = new ArrayList<>();
+                for (DataSnapshot snapshotData : dataSnapshot.getChildren()) {
+                    complaintList.add(snapshotData.getValue(String.class));
+                }
+                // Check if the new policeStationId already exists in the list
+                if (!complaintList.contains(complaintId)) {
+                    // If it doesn't exist, add it to the list
+                    complaintList.add(complaintId);
+
+                    // Update the value of policeStationList in the database
+                    depAdminRef.child(depAdminId).child("complaintList").setValue(complaintList).addOnSuccessListener(aVoid -> {
+
+                        getDepAdminFCMToken(depAdminId);
+                        evidenceUri = null;
+                        LoadingDialog.hideLoadingDialog(loadingDialog);
+                        Toast.makeText(getActivity(), "Complaint Submitted successfully!", Toast.LENGTH_SHORT).show();
+                        complaintDialog.dismiss();
+
+                    }).addOnFailureListener(e -> {
+                        // Handle failure
+                        Toast.makeText(requireActivity(), "Failed to add Complaint to DepAdminRef: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                } else {
+                    LoadingDialog.hideLoadingDialog(loadingDialog);
+                    Toast.makeText(getActivity(), "Complaint Submitted successfully!", Toast.LENGTH_SHORT).show();
+                    complaintDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle onCancelled event
+                LoadingDialog.hideLoadingDialog(loadingDialog);
+                Toast.makeText(requireActivity(), "Failed to retrieve user complaint list: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getDepAdminFCMToken(String depAdminId) {
+        depAdminRef.child(depAdminId).child("depAdminFCMToken").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                sendNotification(task.getResult().getValue().toString());
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(requireActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    void sendNotification(String token) {
+
+        try {
+            JSONObject jsonObject = new JSONObject();
+
+            JSONObject dataObj = new JSONObject();
+            dataObj.put("title", userData.getString("name", ""));
+            dataObj.put("body", "registered a complaint.");
+
+            jsonObject.put("data", dataObj);
+            jsonObject.put("to", token);
+
+            callApi(jsonObject);
+
+        } catch (Exception e) {
+
+        }
+    }
+
+    void callApi(JSONObject jsonObject) {
+        MediaType JSON = MediaType.get("application/json; charset=utf-8");
+        OkHttpClient client = new OkHttpClient();
+        String url = "https://fcm.googleapis.com/fcm/send";
+        RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
+        Request request = new Request.Builder().url(url).post(body).header("Authorization", "Bearer AAAA-aYabrI:APA91bHATVQVDYwB1qVX2_O8D1wWhVy0weiIPNJ5-G76w7WMSqcyqVs3HkOqJw8qYXlEl5YvG_62HgIyURoeNPpJN5n3v3jVeNtsGTKmle7tw7tuxxhrtpyCd0zcniEjIgb9aldbIG0l").build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
             }
         });
     }
@@ -544,7 +728,6 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
 
                     crimesList.add(crimesModel.getCrimeType());
                 }
-
                 setCrimeTypesToRecycler(crimesList);
             }
 
@@ -627,34 +810,79 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
 
     private void fetchComplaintsData() {
 
-        loadingDialog = LoadingDialog.showLoadingDialog(getActivity());
-
-        complaintsRef.addValueEventListener(new ValueEventListener() {
+        binding.complaintsProgressbar.setVisibility(View.VISIBLE);
+        complaints.clear();
+        userRef.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("complaintList").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                complaints.clear();
-
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    complaints.add(dataSnapshot.getValue(ComplaintModel.class));
+                if (getActivity() == null) {
+                    return;
                 }
 
-                LoadingDialog.hideLoadingDialog(loadingDialog);
-
-                setDataToRecycler(complaints);
-
+                if (snapshot.exists()) {
+                    complaints.clear(); // Clear complaints to avoid duplication
+                    for (DataSnapshot snapshotData : snapshot.getChildren()) {
+                        String complaintID = snapshotData.getValue(String.class);
+                        listenForComplaintUpdates(complaintID);
+                    }
+                } else {
+                    binding.complaintsProgressbar.setVisibility(View.GONE);
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                binding.complaintsProgressbar.setVisibility(View.GONE);
                 Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    private void listenForComplaintUpdates(String complaintID) {
+        complaintsRef.child(complaintID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    ComplaintModel complaint = snapshot.getValue(ComplaintModel.class);
+                    if (complaint != null) {
+                        int index = findComplaintIndex(complaintID);
+                        if (index == -1) {
+                            // New complaint
+                            complaints.add(complaint);
+                        } else {
+                            // Existing complaint, update it
+                            complaints.set(index, complaint);
+                        }
+
+                        complaints.sort((complaint1, complaint2) -> {
+                            return complaint2.getComplaintDateTime().compareTo(complaint1.getComplaintDateTime()); // Descending order
+                        });
+                        setDataToRecycler(complaints);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                binding.complaintsProgressbar.setVisibility(View.GONE);
+                Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private int findComplaintIndex(String complaintID) {
+        for (int i = 0; i < complaints.size(); i++) {
+            if (complaints.get(i).getComplaintId().equals(complaintID)) {
+                return i;
+            }
+        }
+        return -1;
+    }
     private void setDataToRecycler(List<ComplaintModel> complaints) {
         complaintsAdapter = new ComplaintsAdapter(getActivity(), complaints);
         binding.complaintsRecycler.setAdapter(complaintsAdapter);
+        binding.complaintsProgressbar.setVisibility(View.GONE);
     }
 
     private void startVoiceRecognition(RecognitionCallback callback) {

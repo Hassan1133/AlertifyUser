@@ -3,24 +3,24 @@ package com.example.alertify_user.fragments;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+
 import com.example.alertify_user.R;
 import com.example.alertify_user.databinding.FragmentEmergencyServiceBinding;
 import com.example.alertify_user.main_utils.LatLngWrapper;
-import com.example.alertify_user.main_utils.LoadingDialog;
 import com.example.alertify_user.models.DepAdminModel;
 import com.example.alertify_user.models.EmergencyServiceModel;
 import com.example.alertify_user.models.PoliceStationModel;
@@ -31,6 +31,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -89,10 +90,18 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.emergencyBtn:
-                getLastLocation();
-                break;
+        if (v.getId() == R.id.emergencyBtn) {
+            new MaterialAlertDialogBuilder(requireContext()).setMessage("Are you sure you want to send emergency request?").setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    getLastLocation();
+                }
+            }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            }).show();
         }
     }
 
@@ -149,7 +158,7 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
 
                 if (isLocationInsidePoliceStationArea(new LatLng(userCurrentLatitude, userCurrentLongitude), latLngPoints)) {
                     appropriatePoliceStationName = policeStation.getPoliceStationName();
-                    getDepartmentAdminData(appropriatePoliceStationName);
+                    setEmergencyRequestToModel(policeStation.getDepAdminId());
                     break;
                 }
             }
@@ -158,40 +167,6 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
                 Toast.makeText(getActivity(), "No police station found regarding your location", Toast.LENGTH_SHORT).show();
             }
 
-        }
-    }
-
-    private void getDepartmentAdminData(String policeStationName) {
-        depAdminRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                depAdmins.clear();
-
-                if (snapshot.exists()) {
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        DepAdminModel depAdminModel = dataSnapshot.getValue(DepAdminModel.class);
-                        depAdmins.add(depAdminModel);
-                    }
-                    getAppropriateDepAdminData(policeStationName, depAdmins);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void getAppropriateDepAdminData(String policeStation, ArrayList<DepAdminModel> depAdmins) {
-
-        for (DepAdminModel depAdmin : this.depAdmins) {
-            if (depAdmin.getDepAdminPoliceStation().matches(policeStation)) {
-                sendNotification(depAdmin.getDepAdminFCMToken());
-                setEmergencyRequestToModel();
-                return;
-            }
         }
     }
 
@@ -259,7 +234,7 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
         });
     }
 
-    private void setEmergencyRequestToModel() {
+    private void setEmergencyRequestToModel(String depAdminId) {
         if (appropriatePoliceStationName != null && userCurrentLatitude != 0 && userCurrentLongitude != 0) {
 
             SharedPreferences userData = getActivity().getSharedPreferences("userData", MODE_PRIVATE);
@@ -277,11 +252,11 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
             emergencyServiceModel.setUserCurrentLatitude(userCurrentLatitude);
             emergencyServiceModel.setUserCurrentLongitude(userCurrentLongitude);
 
-            addEmergencyRequestToDB(emergencyServiceModel);
+            addEmergencyRequestToDB(emergencyServiceModel, depAdminId);
         }
     }
 
-    private void addEmergencyRequestToDB(EmergencyServiceModel emergencyServiceRequest) {
+    private void addEmergencyRequestToDB(EmergencyServiceModel emergencyServiceRequest, String depAdminId) {
         emergencyRequestsRef
                 .child(emergencyServiceRequest.getRequestId())
                 .setValue(emergencyServiceRequest)
@@ -289,7 +264,7 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(getActivity(), "Service request sent", Toast.LENGTH_SHORT).show();
+                            updateDepAdminEmergencyRequestList(depAdminId, emergencyServiceRequest.getRequestId());
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -300,10 +275,59 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
                 });
     }
 
+    private void updateDepAdminEmergencyRequestList(String depAdminId, String requestId) {
+        depAdminRef.child(depAdminId).child("emergencyRequestList").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<String> requestList = new ArrayList<>();
+                for (DataSnapshot snapshotData : dataSnapshot.getChildren()) {
+                    requestList.add(snapshotData.getValue(String.class));
+                }
+                // Check if the new policeStationId already exists in the list
+                if (!requestList.contains(requestId)) {
+                    // If it doesn't exist, add it to the list
+                    requestList.add(requestId);
+
+                    // Update the value of policeStationList in the database
+                    depAdminRef.child(depAdminId).child("emergencyRequestList").setValue(requestList).addOnSuccessListener(aVoid -> {
+
+                        getDepAdminFCMToken(depAdminId);
+                        Toast.makeText(getActivity(), "Emergency Service request sent", Toast.LENGTH_SHORT).show();
+
+                    }).addOnFailureListener(e -> {
+                        // Handle failure
+                        Toast.makeText(requireActivity(), "Failed to add emergencyRequestList to DepAdminRef: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                } else {
+                    Toast.makeText(getActivity(), "Emergency Service request sent", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle onCancelled event
+                Toast.makeText(requireActivity(), "Failed to retrieve depAdmin emergency Request list: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getDepAdminFCMToken(String depAdminId) {
+        depAdminRef.child(depAdminId).child("depAdminFCMToken").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                sendNotification(task.getResult().getValue().toString());
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(requireActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private String getCurrentDateTime() {
         // Create a SimpleDateFormat to format the date and time as desired
-        SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy hh:mm a");
-        String formattedDate = dateFormat.format(new Date());
-        return formattedDate;
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy hh:mm a");
+        return dateFormat.format(new Date());
     }
 }

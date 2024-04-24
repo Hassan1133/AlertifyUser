@@ -2,6 +2,7 @@ package com.example.alertify_user.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +44,7 @@ public class ComplaintsAdapter extends RecyclerView.Adapter<ComplaintsAdapter.Ho
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
+        Log.d("TAGHOLDER", "onBindViewHolder: "+position+" ---- "+complaintsList.size());
         ComplaintModel complaintModel = complaintsList.get(position);
 
         try {
