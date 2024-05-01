@@ -42,8 +42,6 @@ import com.example.alertify_user.adapters.DropDownAdapter;
 import com.example.alertify_user.databinding.ComplaintDialogBinding;
 import com.example.alertify_user.databinding.ComplaintsFragmentBinding;
 import com.example.alertify_user.interfaces.RecognitionCallback;
-import com.example.alertify_user.interfaces.TranslationCallback;
-import com.example.alertify_user.main_utils.LanguageTranslator;
 import com.example.alertify_user.main_utils.LatLngWrapper;
 import com.example.alertify_user.main_utils.LoadingDialog;
 import com.example.alertify_user.main_utils.LocationPermissionUtils;
@@ -560,7 +558,6 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
                 }
                 // Check if the new policeStationId already exists in the list
                 if (!complaintList.contains(complaintId)) {
-                    Toast.makeText(getActivity(), "e.getMessage()", Toast.LENGTH_SHORT).show();
                     // If it doesn't exist, add it to the list
                     complaintList.add(complaintId);
 
@@ -650,7 +647,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
 
             JSONObject dataObj = new JSONObject();
             dataObj.put("title", userData.getString("name", ""));
-            dataObj.put("body", "registered a complaint.");
+            dataObj.put("body", "registered a complaint.complaint");
             dataObj.put("type", "complaint");
 
             jsonObject.put("data", dataObj);
@@ -918,24 +915,9 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
         public void onActivityResult(ActivityResult result) {
             if (result.getResultCode() == Activity.RESULT_OK) {
                 ArrayList<String> recognizedResult = result.getData().getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-//              LanguageTranslator to translate the recognized text
-                LanguageTranslator.translateText(recognizedResult.get(0), getActivity(), new TranslationCallback() {
-                    @Override
-                    public void onTranslationComplete(String translatedText) {
-                        if (recognitionCallback != null) {
-                            recognitionCallback.onRecognitionComplete(translatedText);
-                        }
-                    }
-
-                    @Override
-                    public void onTranslationFailure(String errorMessage) {
-                        if (recognitionCallback != null) {
-                            recognitionCallback.onRecognitionFailure(errorMessage);
-                        }
-                    }
-                });
-
+                recognitionCallback.onRecognitionComplete(recognizedResult.get(0));
                 recognizedResult.clear();
+
             }
         }
     });
