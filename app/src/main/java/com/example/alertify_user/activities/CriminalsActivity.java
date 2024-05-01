@@ -25,7 +25,6 @@ import java.util.List;
 public class CriminalsActivity extends AppCompatActivity {
 
     private DatabaseReference criminalsRef;
-
     private List<CriminalsModel> criminals;
     private ActivityCriminalsBinding binding;
     @Override

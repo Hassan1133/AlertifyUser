@@ -22,7 +22,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.alertify_user.R;
 import com.example.alertify_user.fragments.Complaints_Fragment;
-import com.example.alertify_user.fragments.EmergencyServiceFragment;
+import com.example.alertify_user.fragments.EmergencyRequestFragment;
 import com.example.alertify_user.fragments.PoliceStationFragment;
 import com.example.alertify_user.fragments.Records_Fragment;
 import com.example.alertify_user.main_utils.LocationPermissionUtils;
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         loadFragment(new Records_Fragment());
                         return true;
                     case R.id.emergency:
-                        loadFragment(new EmergencyServiceFragment());
+                        loadFragment(new EmergencyRequestFragment());
                         return true;
                 }
                 return false;

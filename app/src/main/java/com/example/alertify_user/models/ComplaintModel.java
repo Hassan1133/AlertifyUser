@@ -18,6 +18,14 @@ public class ComplaintModel implements Serializable {
     private String complaintDateTime;
     private String investigationStatus;
     private String feedback;
+    private Boolean sendToHighAuthority;
+    public Boolean getSendToHighAuthority() {
+        return sendToHighAuthority;
+    }
+
+    public void setSendToHighAuthority(Boolean sendToHighAuthority) {
+        this.sendToHighAuthority = sendToHighAuthority;
+    }
 
     public String getFeedback() {
         return feedback;

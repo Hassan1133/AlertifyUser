@@ -486,6 +486,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
         complaintModel.setUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
         complaintModel.setInvestigationStatus("Pending");
         complaintModel.setFeedback("none");
+        complaintModel.setSendToHighAuthority(false);
         uploadEvidence(complaintModel, depAdminId);
     }
 
@@ -650,6 +651,7 @@ public class Complaints_Fragment extends Fragment implements View.OnClickListene
             JSONObject dataObj = new JSONObject();
             dataObj.put("title", userData.getString("name", ""));
             dataObj.put("body", "registered a complaint.");
+            dataObj.put("type", "complaint");
 
             jsonObject.put("data", dataObj);
             jsonObject.put("to", token);

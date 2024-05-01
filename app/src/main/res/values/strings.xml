@@ -65,4 +65,6 @@
     <string name="complaint_datetime">Complaint DateTime</string>
     <string name="crime_datetime">Crime DateTime</string>
     <string name="investigation_status">Investigation Status</string>
+    <string name="crime">Crime</string>
+    <string name="section">Section:</string>
 </resources>

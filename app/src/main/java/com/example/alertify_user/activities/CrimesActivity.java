@@ -70,7 +70,7 @@ public class CrimesActivity extends AppCompatActivity {
     private void search(String newText) {
         ArrayList<CrimesModel> searchList = new ArrayList<>();
         for (CrimesModel i : crimes) {
-            if (i.getCrimeType().toLowerCase().contains(newText.toLowerCase())) {
+            if (i.getCrimeType().toLowerCase().contains(newText.toLowerCase()) || i.getDefinition().toLowerCase().contains(newText.toLowerCase())) {
                 searchList.add(i);
             }
         }

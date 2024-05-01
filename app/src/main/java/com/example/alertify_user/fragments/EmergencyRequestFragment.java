@@ -21,8 +21,7 @@ import androidx.fragment.app.Fragment;
 import com.example.alertify_user.R;
 import com.example.alertify_user.databinding.FragmentEmergencyServiceBinding;
 import com.example.alertify_user.main_utils.LatLngWrapper;
-import com.example.alertify_user.models.DepAdminModel;
-import com.example.alertify_user.models.EmergencyServiceModel;
+import com.example.alertify_user.models.EmergencyRequestModel;
 import com.example.alertify_user.models.PoliceStationModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -55,7 +54,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class EmergencyServiceFragment extends Fragment implements View.OnClickListener {
+public class EmergencyRequestFragment extends Fragment implements View.OnClickListener {
 
     private FragmentEmergencyServiceBinding binding;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -63,7 +62,6 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
     private double userCurrentLongitude;
     private DatabaseReference policeStationsRef, depAdminRef, emergencyRequestsRef;
     private ArrayList<PoliceStationModel> policeStations;
-    private ArrayList<DepAdminModel> depAdmins;
 
     private String appropriatePoliceStationName;
 
@@ -82,7 +80,6 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
         policeStationsRef = FirebaseDatabase.getInstance().getReference("AlertifyPoliceStations");
         policeStations = new ArrayList<>();
-        depAdmins = new ArrayList<>();
         depAdminRef = FirebaseDatabase.getInstance().getReference("AlertifyDepAdmin");
         emergencyRequestsRef = FirebaseDatabase.getInstance().getReference("AlertifyEmergencyRequests");
         userData = getContext().getSharedPreferences("userData", MODE_PRIVATE);
@@ -196,6 +193,7 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
             JSONObject dataObj = new JSONObject();
             dataObj.put("title", userData.getString("name",""));
             dataObj.put("body", "needs help right now.");
+            dataObj.put("type", "emergency");
 
             jsonObject.put("data", dataObj);
             jsonObject.put("to", token);
@@ -239,15 +237,11 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
 
             SharedPreferences userData = getActivity().getSharedPreferences("userData", MODE_PRIVATE);
 
-            EmergencyServiceModel emergencyServiceModel = new EmergencyServiceModel();
+            EmergencyRequestModel emergencyServiceModel = new EmergencyRequestModel();
             emergencyServiceModel.setRequestId(emergencyRequestsRef.push().getKey());
             emergencyServiceModel.setRequestStatus("unseen");
             emergencyServiceModel.setRequestDateTime(getCurrentDateTime());
             emergencyServiceModel.setUserId(userData.getString("id", ""));
-            emergencyServiceModel.setUserName(userData.getString("name", ""));
-            emergencyServiceModel.setUserEmail(userData.getString("email", ""));
-            emergencyServiceModel.setUserCnic(userData.getString("cnicNo", ""));
-            emergencyServiceModel.setUserPhoneNo(userData.getString("phoneNo", ""));
             emergencyServiceModel.setPoliceStation(appropriatePoliceStationName);
             emergencyServiceModel.setUserCurrentLatitude(userCurrentLatitude);
             emergencyServiceModel.setUserCurrentLongitude(userCurrentLongitude);
@@ -256,7 +250,7 @@ public class EmergencyServiceFragment extends Fragment implements View.OnClickLi
         }
     }
 
-    private void addEmergencyRequestToDB(EmergencyServiceModel emergencyServiceRequest, String depAdminId) {
+    private void addEmergencyRequestToDB(EmergencyRequestModel emergencyServiceRequest, String depAdminId) {
         emergencyRequestsRef
                 .child(emergencyServiceRequest.getRequestId())
                 .setValue(emergencyServiceRequest)

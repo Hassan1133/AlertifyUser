@@ -1,9 +1,9 @@
 package com.example.alertify_user.adapters;
 
-import static com.example.alertify_user.constants.Constants.ALERTIFY_CRIMES_REF;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.alertify_user.R;
-import com.example.alertify_user.models.CrimesModel;
+import com.example.alertify_user.activities.LawsDetailsActivity;
+import com.example.alertify_user.models.LawsModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -24,16 +25,16 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
-public class CrimesAdp extends RecyclerView.Adapter<CrimesAdp.Holder> {
+public class LawsAdp extends RecyclerView.Adapter<LawsAdp.Holder> {
 
     private final Context context;
 
-    private final List<CrimesModel> crimesList;
+    private final List<LawsModel> crimesList;
 
-    public CrimesAdp(Context context, List<CrimesModel> crimes) {
+
+    public LawsAdp(Context context, List<LawsModel> crimes) {
         this.context = context;
         crimesList = crimes;
-
     }
 
     @NonNull
@@ -41,7 +42,7 @@ public class CrimesAdp extends RecyclerView.Adapter<CrimesAdp.Holder> {
     public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.crimes_recycler_design, parent, false);
+        View view = inflater.inflate(R.layout.laws_recyler_design, parent, false);
 
         return new Holder(view);
     }
@@ -49,11 +50,18 @@ public class CrimesAdp extends RecyclerView.Adapter<CrimesAdp.Holder> {
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
 
-        CrimesModel crimesModel = crimesList.get(position);
+        LawsModel lawsModel = crimesList.get(position);
 
-        holder.crime.setText(crimesModel.getCrimeType());
-        holder.definition.setText(crimesModel.getDefinition());
+        holder.crime.setText(lawsModel.getCrimeType());
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, LawsDetailsActivity.class);
+                intent.putExtra("lawsModel", lawsModel);
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -63,11 +71,11 @@ public class CrimesAdp extends RecyclerView.Adapter<CrimesAdp.Holder> {
 
     class Holder extends RecyclerView.ViewHolder {
 
-        private TextView crime, definition;
+        private TextView crime;
+
         public Holder(@NonNull View itemView) {
             super(itemView);
             crime = itemView.findViewById(R.id.crime);
-            definition = itemView.findViewById(R.id.definition);
         }
     }
 }

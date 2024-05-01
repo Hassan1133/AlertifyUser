@@ -10,7 +10,6 @@ public class UserModel {
     private String email;
     private String userStatus;
     private String type;
-
     private List<String> complaintList;
 
     public List<String> getComplaintList() {

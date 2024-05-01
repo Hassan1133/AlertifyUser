@@ -6,8 +6,6 @@ public class DepAdminModel {
     private String depAdminPoliceStation;
     private String depAdminEmail;
     private String depAdminStatus;
-    private String depAdminImageUrl;
-
     private String depAdminFCMToken;
 
     public String getDepAdminId() {
@@ -56,14 +54,6 @@ public class DepAdminModel {
 
     public void setDepAdminStatus(String depAdminStatus) {
         this.depAdminStatus = depAdminStatus;
-    }
-
-    public String getDepAdminImageUrl() {
-        return depAdminImageUrl;
-    }
-
-    public void setDepAdminImageUrl(String depAdminImageUrl) {
-        this.depAdminImageUrl = depAdminImageUrl;
     }
 
     public String getDepAdminFCMToken() {

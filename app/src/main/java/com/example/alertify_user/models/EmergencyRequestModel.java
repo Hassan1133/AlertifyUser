@@ -1,14 +1,10 @@
 package com.example.alertify_user.models;
 
-public class EmergencyServiceModel {
+public class EmergencyRequestModel {
 
     private String requestId;
     private String requestStatus;
     private String userId;
-    private String userEmail;
-    private String userName;
-    private String userCnic;
-    private String userPhoneNo;
     private String policeStation;
     private String requestDateTime;
     private double userCurrentLatitude;
@@ -36,38 +32,6 @@ public class EmergencyServiceModel {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public String getUserEmail() {
-        return userEmail;
-    }
-
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getUserCnic() {
-        return userCnic;
-    }
-
-    public void setUserCnic(String userCnic) {
-        this.userCnic = userCnic;
-    }
-
-    public String getUserPhoneNo() {
-        return userPhoneNo;
-    }
-
-    public void setUserPhoneNo(String userPhoneNo) {
-        this.userPhoneNo = userPhoneNo;
     }
 
     public String getPoliceStation() {
